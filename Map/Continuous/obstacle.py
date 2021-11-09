@@ -24,12 +24,13 @@ class obstacle:
             circle          ['circle',    [pt1, pt2], [r]]
             ellipse         ['ellipse',   [pt1, pt2], [long_axis, short_axis, theta_bias]]'''
 
-    def set_obs(self, message: list):
+    @staticmethod
+    def set_obs(message: list):
         obs = []
         if len(message) == 0:
             pass
         for item in message:
-            if item == []:
+            if not item:
                 continue
             [name, [x, y], constraints] = item
             if name == 'triangle':              # ['triangle',  [pt1, pt2], [r, theta0, theta_bias]]
