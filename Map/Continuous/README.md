@@ -22,6 +22,4 @@ This is designed for testing samplingmap.py
 Here is a demo by running test_sampling_map.py.
 
 ## a demo video
-<video id="video" controls="" preload="none" poster="封面">
-      <source id="mp4" src="mp4格式视频" type="video/mp4">
-</videos>
+![image](https://github.com/ZhengYaWei1992/ZWProgressView/blob/master/Untitled3.gif)
