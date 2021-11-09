@@ -13,4 +13,10 @@ obs = [['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
 obs = obstacle(obs).get_obs()
 ```
 Detailed formation of 'obs' can be found in the comment of obstacle.py
-#samplingmap.py
+
+# samplingmap.py
+This module defines continuous map for sampling based path planning algorithms.
+
+# test_sampling_map.py
+This is designed for testing samplingmap.py
+
