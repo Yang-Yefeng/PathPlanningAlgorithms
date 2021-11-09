@@ -19,4 +19,6 @@ This module defines continuous map for sampling based path planning algorithms.
 
 # test_sampling_map.py
 This is designed for testing samplingmap.py
+Here is a demo by running test_sampling_map.py.
 
+## a demo video
