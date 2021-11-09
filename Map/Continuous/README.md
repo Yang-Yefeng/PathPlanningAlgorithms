@@ -1,6 +1,6 @@
 # obstacle.py
 This module is designed to define obstacles in a continuous map, including circle, ellipse, and convex polygon (triangle, rectangle, pentagon, hexagon).
-One can use it by:
+One can use it by typing:
 ```
 from obstacle import obstacle
 
@@ -12,5 +12,5 @@ obs = [['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
        ['ellipse',   [3, 8],     [2.6, 0.6, -20.0]]]
 obs = obstacle(obs).get_obs()
 ```
-Detailed formation of the 'obs' can be found in the comment of obstacle.py
+Detailed formation of 'obs' can be found in the comment of obstacle.py
 #samplingmap.py
