@@ -21,8 +21,11 @@ class Color:
         self.Chocolate2 = (33, 118, 238)
         self.Thistle = (216, 191, 216)
         self.Purple = (240, 32, 160)
+        self.DarkGray = (169,169,169)
+        self.Gray = (128, 128, 128)
+        self.DimGray = (105,105,105)
 
-        self.n_color = 15
+        self.n_color = 18
 
         self.color_container = [self.Black,
                                 self.White,
@@ -38,7 +41,10 @@ class Color:
                                 self.DarkMagenta,
                                 self.Chocolate2,
                                 self.Thistle,
-                                self.Purple]
+                                self.Purple,
+                                self.DarkGray,
+                                self.Gray,
+                                self.DimGray]
 
     def get_color_by_item(self, _n: int):
         """
