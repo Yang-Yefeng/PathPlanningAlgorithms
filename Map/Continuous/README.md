@@ -1,4 +1,4 @@
-#obstacle.py
+# obstacle.py
 This module is designed to define obstacles in a continuous map, including circle, ellipse, and convex polygon (triangle, rectangle, pentagon, hexagon).
 One can use it by:
 ```
