@@ -52,15 +52,12 @@ class RRT(samplingmap):
         step = 0
         while step <= 10000:
             step += 1
-            dir_points = self.create_random_points_in_map(1)
-            now_nodes = self.search_nearest_node_and_tree_generate(dir_points)
-            for new_node in now_nodes:
+            dir_points = self.create_random_points_in_map(5)
+            new_nodes = self.search_nearest_node_and_tree_generate(dir_points)
+            for new_node in new_nodes:
                 if is_dynamic_show:
                     '''draw dynamic map'''
-                    new_node_parent = self.parent[tuple(new_node)]
-                    new_node_int = self.dis2pixel(new_node)
-                    new_node_parent_int = self.dis2pixel(new_node_parent)
-                    cv.line(self.image, new_node_int, new_node_parent_int, Color().Purple, 1)
+                    cv.line(self.image, self.dis2pixel(new_node), self.dis2pixel(self.parent[tuple(new_node)]), Color().Purple, 1)
                     cv.imshow(self.name4image, self.image)
                     cv.waitKey(1)
                     '''draw dynamic map'''
@@ -106,6 +103,6 @@ if __name__ == '__main__':
               terminal=[9.5, 9.5],
               obs=obs,
               map_file=None)
-    if rrt.rrt_main(is_dynamic_show=False):
+    if rrt.rrt_main(is_dynamic_show=True):
         rrt.path_find()
         rrt.path_draw(rrt.waypoint)
