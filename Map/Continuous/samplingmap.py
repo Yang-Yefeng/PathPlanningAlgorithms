@@ -33,8 +33,10 @@ class samplingmap:
             self.x_size = x_size
             self.y_size = y_size
             self.name4image = image_name
-            self.start = self.start = np.array([0.5, 0.5]) if start is None else np.array(start)
-            self.terminal = np.array([x_size - 0.5, y_size - 0.5]) if terminal is None else np.array(terminal)
+            # self.start = self.start = np.array([0.5, 0.5]) if start is None else np.array(start)
+            self.start = self.start = [0.5, 0.5] if start is None else start
+            # self.terminal = np.array([x_size - 0.5, y_size - 0.5]) if terminal is None else np.array(terminal)
+            self.terminal = [x_size - 0.5, y_size - 0.5] if terminal is None else terminal
             self.obs = obs
             self.obs_num = len(obs)
         else:
@@ -170,4 +172,17 @@ class samplingmap:
         self.map_draw_start_terminal()
         self.map_draw_obs()
         cv.imshow(self.name4image, self.image)
-        cv.waitKey(100)
+        cv.waitKey(0)
+
+    def path_draw(self, path):
+        pt1 = path.pop()
+        pt1_int = self.dis2pixel(pt1)
+        while path:
+            pt2 = path.pop()
+            pt2_int = self.dis2pixel(pt2)
+            cv.line(self.image, pt1_int, pt2_int, Color().Orange, 2)
+            pt1 = pt2
+            pt1_int = self.dis2pixel(pt1)
+        cv.imshow(self.name4image, self.image)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
