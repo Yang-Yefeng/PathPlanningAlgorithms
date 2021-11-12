@@ -9,8 +9,8 @@ from Map.Color.Color import Color
 
 
 class RRT(samplingmap):
-    def __init__(self, width, height, x_size, y_size, image_name, start, terminal, obs, map_file):
-        super(RRT, self).__init__(width, height, x_size, y_size, image_name, start, terminal, obs, map_file)
+    def __init__(self, width, height, x_size, y_size, image_name, start, terminal, obstacles, map_file):
+        super(RRT, self).__init__(width, height, x_size, y_size, image_name, start, terminal, obstacles, map_file)
 
         self.tree = KDTree.create(dimensions=2)     # create a KDTree with dimension 2
         self.step = 0.2                             # each step length robot moves
@@ -20,6 +20,7 @@ class RRT(samplingmap):
 
         '''initialization'''
         self.tree.add(self.start)
+        self.parent[tuple(self.start)] = tuple(self.start)
         '''initialization'''
 
     def create_random_points_in_map(self, num):
@@ -29,24 +30,28 @@ class RRT(samplingmap):
         """
         return [[random.uniform(0, self.x_size), random.uniform(0, self.y_size)] for _ in range(num)]
 
-    def search_nearest_node_and_tree_generate(self, points):
-        new_nodes = []
-        for point in points:
-            node, _ = self.tree.search_nn(point)                                    # 开始寻找在KDTree中离point最近的节点
-            new_node = self.tree_generate_with_start_end_point(node.data, point)    # 新的节点，但是没有做障碍物检测
-            if not self.point_is_in_obs(new_node):
-                new_nodes.append(new_node)
-                self.tree.add(new_node)
-                self.parent[tuple(new_node)] = tuple(node.data)
-            # nearests.append(node.data)
-        return new_nodes
-
     def tree_generate_with_start_end_point(self, start, end):
         [dx, dy] = [end[i] - start[i] for i in range(2)]
         scale = self.step / math.sqrt(dx ** 2 + dy ** 2)
         x = start[0] + dx * scale
         y = start[1] + dy * scale
         return [x, y]
+
+    def search_nearest_node_and_tree_generate(self, points):
+        new_nodes = []
+        for point in points:
+            node, _ = self.tree.search_nn(point)                                    # 开始寻找在KDTree中离point最近的节点
+            new_node = self.tree_generate_with_start_end_point(node.data, point)    # 新的节点，但是没有做障碍物检测
+            if self.point_is_in_obs(new_node):
+                continue
+            if self.line_is_in_obs(new_node, node.data):
+                '''There would be bugs for RRT_Smart if no 'line_is_in_obs' detection'''
+                continue
+            new_nodes.append(new_node)
+            self.tree.add(new_node)
+            self.parent[tuple(new_node)] = tuple(node.data)
+            # nearests.append(node.data)
+        return new_nodes
 
     def rrt_main(self, is_dynamic_show=False):
         step = 0
@@ -75,7 +80,7 @@ class RRT(samplingmap):
         while True:
             s = self.parent[s]
             self.waypoint.append(s)
-            if s == tuple(self.start):
+            if s == self.parent[s]:  # tuple(self.start)
                 break
 
 
@@ -101,8 +106,8 @@ if __name__ == '__main__':
               image_name='samplingmap',
               start=[0.5, 0.5],
               terminal=[9.5, 9.5],
-              obs=obs,
+              obstacles=obs,
               map_file=None)
     if rrt.rrt_main(is_dynamic_show=True):
         rrt.path_find()
-        rrt.path_draw(rrt.waypoint)
+        rrt.path_draw(rrt.waypoint, 'rrt.png')
