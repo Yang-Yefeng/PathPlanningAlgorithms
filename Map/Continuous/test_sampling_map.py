@@ -31,4 +31,4 @@ if __name__ == '__main__':
                              terminal=[9.5, 9.5],
                              obs=obs,
                              map_file=None)
-    sample_map.test_func_point_is_in_obs_using_opencv_callback()
+    # sample_map.test_func_point_is_in_obs_using_opencv_callback()
