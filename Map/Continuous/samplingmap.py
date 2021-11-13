@@ -228,6 +228,7 @@ class samplingmap:
         for _obs in self.obs:
             if _obs[0] == 'circle':
                 if self.line_is_in_circle(_obs[2], _obs[1][0], point1, point2):
+<<<<<<< HEAD
                     # print('line_is_in_circle', point1, point2)
                     print('line_is_in_circle')
                     return True
@@ -240,6 +241,17 @@ class samplingmap:
                 if self.line_is_in_poly([_obs[1][i] for i in [0, 1]], _obs[1][2], _obs[2], point1, point2):
                     # print('line_is_in_poly', point1, point2)
                     print('line_is_in_poly')
+=======
+                    print('line_is_in_circle', point1, point2)
+                    return True
+            elif _obs[0] == 'ellipse':
+                if self.line_is_in_ellipse(_obs[1][0], _obs[1][1], _obs[1][2], _obs[2], point1, point2):
+                    print('line_is_in_ellipse', point1, point2)
+                    return True
+            else:
+                if self.line_is_in_poly([_obs[1][i] for i in [0, 1]], _obs[1][2], _obs[2], point1, point2):
+                    print('line_is_in_poly', point1, point2)
+>>>>>>> 873b27653268c90038a5e5893c28e5a7309f1e58
                     return True
         return False
 
@@ -327,7 +339,11 @@ class samplingmap:
         cv.imshow(self.name4image, self.image)
         cv.waitKey(0)
 
+<<<<<<< HEAD
     def path_draw(self, path, name, color):
+=======
+    def path_draw(self, path, name):
+>>>>>>> 873b27653268c90038a5e5893c28e5a7309f1e58
         pt1 = path.pop()
         pt1_int = self.dis2pixel(pt1)
         while path:
