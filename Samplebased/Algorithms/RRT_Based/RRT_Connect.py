@@ -24,7 +24,11 @@ class RRT_Connect(samplingmap):
 
         '''initialization'''
         self.tree_start.add(self.start)
+        self.tree_start_point.append(self.start)
         self.tree_terminal.add(self.terminal)
+        self.tree_terminal_point.append(self.terminal)
+        self.parent_start[tuple(self.start)] = tuple(self.start)
+        self.parent_terminal[tuple(self.terminal)] = tuple(self.terminal)
         '''initialization'''
 
     def create_random_points_in_map(self, num):
@@ -39,11 +43,12 @@ class RRT_Connect(samplingmap):
         for point in points:
             node, _ = self.tree_start.search_nn(point)                                    # 开始寻找在KDTree中离point最近的节点
             new_node = self.tree_generate_with_start_end_point(node.data, point)    # 新的节点，但是没有做障碍物检测
-            if not self.point_is_in_obs(new_node):
-                new_nodes.append(new_node)
-                self.tree_start.add(new_node)
-                self.tree_start_point.append(new_node)
-                self.parent_start[tuple(new_node)] = tuple(node.data)
+            if self.point_is_in_obs(new_node):
+                continue
+            new_nodes.append(new_node)
+            self.tree_start.add(new_node)
+            self.tree_start_point.append(new_node)
+            self.parent_start[tuple(new_node)] = tuple(node.data)
         return new_nodes
 
     def search_nearest_node_and_tree_generate_from_terminal(self, points):
@@ -51,11 +56,12 @@ class RRT_Connect(samplingmap):
         for point in points:
             node, _ = self.tree_terminal.search_nn(point)                                    # 开始寻找在KDTree中离point最近的节点
             new_node = self.tree_generate_with_start_end_point(node.data, point)    # 新的节点，但是没有做障碍物检测
-            if not self.point_is_in_obs(new_node):
-                new_nodes.append(new_node)
-                self.tree_terminal.add(new_node)
-                self.tree_terminal_point.append(new_node)
-                self.parent_terminal[tuple(new_node)] = tuple(node.data)
+            if self.point_is_in_obs(new_node):
+                continue
+            new_nodes.append(new_node)
+            self.tree_terminal.add(new_node)
+            self.tree_terminal_point.append(new_node)
+            self.parent_terminal[tuple(new_node)] = tuple(node.data)
         return new_nodes
 
     def tree_generate_with_start_end_point(self, start, end):
@@ -74,7 +80,7 @@ class RRT_Connect(samplingmap):
 
     def rrt_connect_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('rrt_connect.mp4', cv.VideoWriter_fourcc(*'mp4v'), 60, (self.width, self.height))
+        video_record = cv.VideoWriter('../../../somefigures/video/rrt_connect.mp4', cv.VideoWriter_fourcc(*'mp4v'), 60, (self.width, self.height))
         while step < 10000:
             step += 1
             dir_points = self.create_random_points_in_map(5)
@@ -149,4 +155,4 @@ if __name__ == '__main__':
     is_path, pt1, pt2 = rrt_connect.rrt_connect_main(is_dynamic_show=True)
     if is_path:
         rrt_connect.path_find(pt1, pt2)
-        rrt_connect.path_draw(rrt_connect.waypoint)
+        rrt_connect.path_draw(rrt_connect.waypoint, 'rrt_connect.png')
