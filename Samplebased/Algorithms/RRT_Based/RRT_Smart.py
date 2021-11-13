@@ -11,7 +11,7 @@ class RRT_Smart(RRT):
 
     def smart_optimize(self):
         self.path_find()
-        self.path_draw(self.waypoint, 'rrt_with_no_smart.png')
+        self.path_draw(self.waypoint, 'rrt_smart.png', Color().Orange)
         s = tuple(self.terminal)
         sterminal = tuple(self.terminal)
         while True:
@@ -20,7 +20,7 @@ class RRT_Smart(RRT):
                 self.parent[sterminal] = ss
                 s = ss
             else:
-                print('拐了', s, ss, sterminal)
+                # print('拐了', s, ss, sterminal)
                 sterminal = copy.deepcopy(s)
                 # break
             if s == self.parent[s]:  # tuple(self.start)
@@ -28,29 +28,37 @@ class RRT_Smart(RRT):
 
     def rrt_smart_main(self, is_dynamic_show=False):
         step = 0
+        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_smart.mp4', cv.VideoWriter_fourcc(*'mp4v'), 300, (self.width, self.height))
         while step <= 10000:
             step += 1
-            dir_points = self.create_random_points_in_map(5)
+            dir_points = self.create_random_points_in_map(50)
             new_nodes = self.search_nearest_node_and_tree_generate(dir_points)
             for new_node in new_nodes:
-                if is_dynamic_show:
-                    '''draw dynamic map'''
-                    cv.line(self.image, self.dis2pixel(new_node), self.dis2pixel(self.parent[tuple(new_node)]), Color().Purple, 1)
-                    cv.imshow(self.name4image, self.image)
-                    cv.waitKey(1)
-                    '''draw dynamic map'''
+                '''draw dynamic map'''
+                cv.line(self.image, self.dis2pixel(new_node), self.dis2pixel(self.parent[tuple(new_node)]), Color().Purple, 1)
+                '''draw dynamic map'''
                 if (new_node[0] - self.terminal[0]) ** 2 + (new_node[1] - self.terminal[1]) ** 2 <= self.stop_iteration ** 2:
                     self.tree.add(self.terminal)
                     self.parent[tuple(self.terminal)] = tuple(new_node)
                     print('Successful, start to optimize...')
+                    print('Please enter any key to continue...')
                     self.smart_optimize()
+                    self.path_find()
+                    self.path_draw(self.waypoint, 'rrt_smart.png', Color().Red)
+                    for _ in range(10):
+                        video_record.write(self.image)
+                    video_record.release()
                     return True
-        print('Failed')
+            video_record.write(self.image)
+            if is_dynamic_show:
+                cv.imshow(self.name4image, self.image)
+                cv.waitKey(1)
+        video_record.release()
         return False
 
 
 if __name__ == '__main__':
-    obs = [
+    obstacles = [
         ['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
         ['rectangle', [3, 3.5],   [2.0, 5.0, 0.]],
         ['rectangle', [4, 1],     [1.5, 5.0, -20.]],
@@ -63,16 +71,22 @@ if __name__ == '__main__':
         ['pentagon',  [3.4, 6.0], [0.6, 50]],
         ['pentagon',  [8.7, 6.4], [0.8, 108]]
     ]
-    obs = obstacle(obs).get_obs()
+    # obstacles = [
+    #     ['rectangle', [7, 8],   [2.0, 74.0, 0.]],
+    #     ['rectangle', [4, 6],   [3.0, 5.0, 0.]],
+    #     ['rectangle', [3, 3.5], [2.0, 5.0, 0.]]
+    # ]
+    obstacles = obstacle(obstacles).get_obs()
     rrt_smart = RRT_Smart(width=400,
                           height=400,
                           x_size=10,
                           y_size=10,
                           image_name='samplingmap',
-                          start=[0.5, 0.5],
+                          start=[0.5, 0.5], # 4.5, 8.5
                           terminal=[9.5, 9.5],
-                          obstacles=obs,
+                          obstacles=obstacles,
                           map_file=None)
     if rrt_smart.rrt_smart_main(is_dynamic_show=True):
-        rrt_smart.path_find()
-        rrt_smart.path_draw(rrt_smart.waypoint, 'rrt_smart.png')
+        print('Successful!')
+    else:
+        print('Failed')
