@@ -9,8 +9,8 @@ from Map.Color.Color import Color
 
 
 class RRT(samplingmap):
-    def __init__(self, width, height, x_size, y_size, image_name, start, terminal, obstacles, map_file):
-        super(RRT, self).__init__(width, height, x_size, y_size, image_name, start, terminal, obstacles, map_file)
+    def __init__(self, width, height, x_size, y_size, image_name, start, terminal, obs, map_file):
+        super(RRT, self).__init__(width, height, x_size, y_size, image_name, start, terminal, obs, map_file)
 
         self.tree = KDTree.create(dimensions=2)     # create a KDTree with dimension 2
         self.step = 0.2                             # each step length robot moves
@@ -55,23 +55,29 @@ class RRT(samplingmap):
 
     def rrt_main(self, is_dynamic_show=False):
         step = 0
+        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt.mp4', cv.VideoWriter_fourcc(*'mp4v'), 300, (self.width, self.height))
         while step <= 10000:
             step += 1
-            dir_points = self.create_random_points_in_map(5)
+            dir_points = self.create_random_points_in_map(50)
             new_nodes = self.search_nearest_node_and_tree_generate(dir_points)
             for new_node in new_nodes:
-                if is_dynamic_show:
-                    '''draw dynamic map'''
-                    cv.line(self.image, self.dis2pixel(new_node), self.dis2pixel(self.parent[tuple(new_node)]), Color().Purple, 1)
-                    cv.imshow(self.name4image, self.image)
-                    cv.waitKey(1)
-                    '''draw dynamic map'''
+                '''draw dynamic map'''
+                cv.line(self.image, self.dis2pixel(new_node), self.dis2pixel(self.parent[tuple(new_node)]), Color().Purple, 1)
+                '''draw dynamic map'''
                 if (new_node[0] - self.terminal[0]) ** 2 + (new_node[1] - self.terminal[1]) ** 2 <= self.stop_iteration ** 2:
                     self.tree.add(self.terminal)
                     self.parent[tuple(self.terminal)] = tuple(new_node)
-                    print('Successful')
+                    self.path_find()
+                    self.path_draw(self.waypoint, 'rrt.png', Color().Orange)
+                    for _ in range(10):
+                        video_record.write(self.image)
+                    video_record.release()
                     return True
-        print('Failed')
+            if is_dynamic_show:
+                cv.imshow(self.name4image, self.image)
+                cv.waitKey(1)
+            video_record.write(self.image)
+        video_record.release()
         return False
 
     def path_find(self):
@@ -85,29 +91,37 @@ class RRT(samplingmap):
 
 
 if __name__ == '__main__':
-    obs = [['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
-           ['rectangle', [3, 3.5],   [2.0, 5.0, 0.]],
-           ['rectangle', [4, 1],     [1.5, 5.0, -20.]],
-           ['pentagon',  [7, 8.5],   [1.0, 180.0]],
-           ['hexagon',   [8.0, 2],   [1.0, 30.0]],
-           ['triangle',  [8.0, 5],   [1.0, 40.0, 20.0]],
-           ['hexagon',   [5.5, 2],   [0.5, 0.0]],
-           ['circle',    [6, 6],     [1.0]],
-           ['ellipse',   [3, 8],     [2.6, 0.6, -20.0]],
-           ['pentagon',  [3.4, 6.0], [0.6, 50]],
-           ['pentagon',  [8.7, 6.4], [0.8, 108]],
-           ['ellipse',   [1.0, 2.5], [0.8, 0.6, 60.0]],
-           ['pentagon',  [6.5, 4.2], [0.46, 25.0]]]
-    obs = obstacle(obs).get_obs()
+    obstacles = [
+        ['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
+        ['rectangle', [3, 3.5],   [2.0, 5.0, 0.]],
+        ['rectangle', [4, 1],     [1.5, 5.0, -20.]],
+        ['pentagon',  [7, 8.5],   [1.0, 180.0]],
+        ['hexagon',   [8.0, 2],   [1.0, 30.0]],
+        ['triangle',  [8.0, 5],   [1.0, 40.0, 20.0]],
+        ['hexagon',   [5.5, 2],   [0.5, 0.0]],
+        ['circle',    [6, 6],     [1.0]],
+        ['ellipse',   [3, 8],     [2.6, 0.6, -20.0]],
+        ['pentagon',  [3.4, 6.0], [0.6, 50]],
+        ['pentagon',  [8.7, 6.4], [0.8, 108]],
+        ['ellipse',   [1.0, 2.5], [0.8, 0.6, 60.0]],
+        ['pentagon',  [6.5, 4.2], [0.46, 25.0]]
+    ]
+    # obstacles = [
+    #     ['rectangle', [7, 8],   [2.0, 74.0, 0.]],
+    #     ['rectangle', [4, 6],   [3.0, 5.0, 0.]],
+    #     ['rectangle', [3, 3.5], [2.0, 5.0, 0.]]
+    # ]
+    obstacles = obstacle(obstacles).get_obs()
     rrt = RRT(width=400,
               height=400,
               x_size=10,
               y_size=10,
               image_name='samplingmap',
-              start=[0.5, 0.5],
+              start=[0.5, 0.5],     # 4.5, 8.5
               terminal=[9.5, 9.5],
-              obstacles=obs,
+              obs=obstacles,
               map_file=None)
     if rrt.rrt_main(is_dynamic_show=True):
-        rrt.path_find()
-        rrt.path_draw(rrt.waypoint, 'rrt.png')
+        print('Successful')
+    else:
+        print('Failed')
