@@ -85,7 +85,7 @@ class samplingmap:
         :return:                    bool
         """
         sub = np.array([point[i] - center[i] for i in [0, 1]])
-        trans = np.array([[cosd(-rotate_angle), sind(-rotate_angle)], [-sind(-rotate_angle), cosd(-rotate_angle)]])
+        trans = np.array([[cosd(rotate_angle), sind(rotate_angle)], [-sind(rotate_angle), cosd(rotate_angle)]])     # 已经对应逆时针转了 -rotate_angle
         [x, y] = list(np.dot(trans, sub))
         return (x / long) ** 2 + (y / short) ** 2 <= 1
 
@@ -120,8 +120,8 @@ class samplingmap:
         pt1 = [point1[i] - center[i] for i in [0, 1]]
         pt2 = [point2[j] - center[j] for j in [0, 1]]
 
-        pptt1 = [pt1[0]*cosd(-rotate_angle) - pt1[1]*sind(-rotate_angle), pt1[0]*sind(-rotate_angle) + pt1[1]*cosd(-rotate_angle)]
-        pptt2 = [pt2[0]*cosd(-rotate_angle) - pt2[1]*sind(-rotate_angle), pt2[0]*sind(-rotate_angle) + pt2[1]*cosd(-rotate_angle)]
+        pptt1 = [pt1[0]*cosd(rotate_angle) - pt1[1]*sind(rotate_angle), pt1[0]*sind(rotate_angle) + pt1[1]*cosd(rotate_angle)]
+        pptt2 = [pt2[0]*cosd(rotate_angle) - pt2[1]*sind(rotate_angle), pt2[0]*sind(rotate_angle) + pt2[1]*cosd(rotate_angle)]
         c = math.sqrt(long ** 2 - short ** 2)
         '''求椭圆焦点坐标'''
         ellipse_1 = [-c, 0]
@@ -229,17 +229,17 @@ class samplingmap:
             if _obs[0] == 'circle':
                 if self.line_is_in_circle(_obs[2], _obs[1][0], point1, point2):
                     # print('line_is_in_circle', point1, point2)
-                    print('line_is_in_circle')
+                    # print('line_is_in_circle')
                     return True
             elif _obs[0] == 'ellipse':
                 if self.line_is_in_ellipse(_obs[1][0], _obs[1][1], _obs[1][2], _obs[2], point1, point2):
                     # print('line_is_in_ellipse', point1, point2)
-                    print('line_is_in_ellipse')
+                    # print('line_is_in_ellipse')
                     return True
             else:
                 if self.line_is_in_poly([_obs[1][i] for i in [0, 1]], _obs[1][2], _obs[2], point1, point2):
                     # print('line_is_in_poly', point1, point2)
-                    print('line_is_in_poly')
+                    # print('line_is_in_poly')
                     return True
         return False
 
@@ -312,7 +312,7 @@ class samplingmap:
                 cv.ellipse(img=self.image,
                            center=self.dis2pixel(pts),
                            axes=(self.length2pixel(constraints[0]), self.length2pixel(constraints[1])),
-                           angle=constraints[2],
+                           angle=-constraints[2],
                            startAngle=0.,
                            endAngle=360.,
                            color=Color().DarkGray,
