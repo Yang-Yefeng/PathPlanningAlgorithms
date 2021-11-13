@@ -20,7 +20,9 @@ class RRT_Connect(samplingmap):
         self.stop_iteration = 0.2
         self.parent_start = dict()
         self.parent_terminal = dict()
+        self.parent = dict()
         self.waypoint = []
+        self.tree_connect = [[0., 0.], [0., 0.]]
 
         '''initialization'''
         self.tree_start.add(self.start)
@@ -75,15 +77,16 @@ class RRT_Connect(samplingmap):
         for i in self.tree_start_point:
             for j in self.tree_terminal_point:
                 if (i[0] - j[0]) ** 2 + (i[1] - j[1]) ** 2 < self.step ** 2:
-                    return True, i, j
-        return False, None, None
+                    self.tree_connect = [i, j]
+                    return True
+        return False
 
     def rrt_connect_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('../../../somefigures/video/rrt_connect.mp4', cv.VideoWriter_fourcc(*'mp4v'), 60, (self.width, self.height))
+        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_connect.mp4', cv.VideoWriter_fourcc(*'mp4v'), 300, (self.width, self.height))
         while step < 10000:
             step += 1
-            dir_points = self.create_random_points_in_map(5)
+            dir_points = self.create_random_points_in_map(50)
             new_node_starts = self.search_nearest_node_and_tree_generate_from_start(dir_points)
             new_node_terminals = self.search_nearest_node_and_tree_generate_from_terminal(dir_points)
             for new_node_start in new_node_starts:
@@ -94,39 +97,63 @@ class RRT_Connect(samplingmap):
                 '''draw dynamic map'''
                 cv.line(self.image, self.dis2pixel(new_node_terminal), self.dis2pixel(self.parent_terminal[tuple(new_node_terminal)]), Color().DarkGreen, 1)
                 '''draw dynamic map'''
-                video_record.write(self.image)
             if is_dynamic_show:
                 cv.imshow(self.name4image, self.image)
                 cv.waitKey(1)
-            connect, pt_connect1, pt_connect2 = self.two_tree_connect()
+            video_record.write(self.image)
+            connect = self.two_tree_connect()
             if connect:
-                print('Successful')
-                # cv.waitKey(0)
+                self.path_find()
+                self.path_draw(self.waypoint, 'rrt_connect.png', Color().Orange)
+                for _ in range(10):
+                    video_record.write(self.image)
                 video_record.release()
-                return connect, pt_connect1, pt_connect2
+                return True
         print('Failed')
-        return False, None, None
+        video_record.release()
+        return False
 
-    def path_find(self, _pt1, _pt2):
-        s = tuple(_pt1)
+    # def path_find(self):
+    #     s = tuple(self.tree_connect[0])
+    #     while True:
+    #         ss = self.parent_start[s]
+    #         sss = ss
+    #         self.parent_terminal[sss] = s
+    #         s = ss
+    #         if ss == tuple(self.start):
+    #             break
+    #     self.parent_terminal[tuple(self.tree_connect[0])] = tuple(self.tree_connect[1])
+    #
+    #     self.parent = self.parent_terminal
+    #     self.waypoint = [tuple(self.start)]
+    #     s = tuple(self.start)
+    #     while True:
+    #         s = self.parent[s]
+    #         self.waypoint.append(s)
+    #         if s == tuple(self.terminal):
+    #             break
+    #     print('Path find finished!')
+
+    def path_find(self):
+        s = tuple(self.tree_connect[1])
         while True:
-            ss = self.parent_start[s]
+            ss = self.parent_terminal[s]
             sss = ss
-            self.parent_terminal[sss] = s
+            self.parent_start[sss] = s
             s = ss
-            if ss == tuple(self.start):
+            if ss == tuple(self.terminal):
                 break
-        self.parent_terminal[tuple(_pt1)] = tuple(_pt2)
+        self.parent_start[tuple(self.tree_connect[1])] = tuple(self.tree_connect[0])
 
-        self.waypoint = [tuple(self.start)]
-        s = tuple(self.start)
+        self.parent = self.parent_start
+        self.waypoint = [tuple(self.terminal)]
+        s = tuple(self.terminal)
         while True:
-            s = self.parent_terminal[s]
+            s = self.parent[s]
             self.waypoint.append(s)
-            if s == tuple(self.terminal):
+            if s == tuple(self.start):
                 break
         print('Path find finished!')
-
 
 if __name__ == '__main__':
     obstacles = [['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
@@ -142,17 +169,22 @@ if __name__ == '__main__':
                  ['pentagon',  [8.7, 6.4], [0.8, 108]],
                  ['ellipse',   [1.0, 2.5], [0.8, 0.6, 60.0]],
                  ['pentagon',  [6.5, 4.2], [0.46, 25.0]]]
+    # obstacles = [
+    #     ['rectangle', [7, 8],   [2.0, 74.0, 0.]],
+    #     ['rectangle', [4, 6],   [3.0, 5.0, 0.]],
+    #     ['rectangle', [3, 3.5], [2.0, 5.0, 0.]]
+    # ]
     obstacles = obstacle(obstacles).get_obs()
     rrt_connect = RRT_Connect(width=400,
                               height=400,
                               x_size=10,
                               y_size=10,
                               image_name='samplingmap',
-                              start=[0.5, 0.5],
+                              start=[0.5, 0.5],     # 0.5, 0.5  4.5, 8.5
                               terminal=[9.5, 9.5],
                               obs=obstacles,
                               map_file=None)
-    is_path, pt1, pt2 = rrt_connect.rrt_connect_main(is_dynamic_show=True)
-    if is_path:
-        rrt_connect.path_find(pt1, pt2)
-        rrt_connect.path_draw(rrt_connect.waypoint, 'rrt_connect.png')
+    if rrt_connect.rrt_connect_main(is_dynamic_show=True):
+        print('Successful')
+    else:
+        print('Failed')
