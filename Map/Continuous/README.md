@@ -22,4 +22,4 @@ This is designed for testing samplingmap.py
 Here is a demo by running test_sampling_map.py.
 
 ## a demo video
-![image](https://github.com/Yang-Yefeng/PathPlanningAlgorithms/blob/main/somefigures/demo.gif)
+![image](https://github.com/Yang-Yefeng/PathPlanningAlgorithms/blob/main/somefigures/figure/demo.gif)
