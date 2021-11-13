@@ -69,3 +69,14 @@ Then you can see an output like this:
 ![image](https://github.com/Yang-Yefeng/PathPlanningAlgorithms/blob/main/somefigures/video/gif/rrt_connect_smart2.gif)
 
 ![image](https://github.com/Yang-Yefeng/PathPlanningAlgorithms/blob/main/somefigures/video/gif/rrt_connect_smart3.gif)
+
+### Informed_RRT_Star.py
+```
+python Informed_RRT_Star.py
+```
+Then you can see an output like this:
+#### Demos
+![image](https://github.com/Yang-Yefeng/PathPlanningAlgorithms/blob/main/somefigures/video/gif/informed_rrt_star1.gif)
+![image](https://github.com/Yang-Yefeng/PathPlanningAlgorithms/blob/main/somefigures/video/gif/informed_rrt_star2.gif)
+
+![image](https://github.com/Yang-Yefeng/PathPlanningAlgorithms/blob/main/somefigures/video/gif/informed_rrt_star3.gif)
