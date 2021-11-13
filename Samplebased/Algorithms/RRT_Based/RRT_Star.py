@@ -5,8 +5,8 @@ from Samplebased.Algorithms.RRT_Based.RRT import RRT
 
 
 class RRT_Star(RRT):
-    def __init__(self, width, height, x_size, y_size, image_name, start, terminal, obstacles, map_file):
-        super(RRT_Star, self).__init__(width, height, x_size, y_size, image_name, start, terminal, obstacles, map_file)
+    def __init__(self, width, height, x_size, y_size, image_name, start, terminal, obs, map_file):
+        super(RRT_Star, self).__init__(width, height, x_size, y_size, image_name, start, terminal, obs, map_file)
 
         self.tree_point = []
         self.circle_r = 0.6
@@ -77,30 +77,34 @@ class RRT_Star(RRT):
 
     def rrt_star_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('../../../somefigures/video/rrt_star.mp4', cv.VideoWriter_fourcc(*'mp4v'), 60, (self.width, self.height))
+        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_star.mp4', cv.VideoWriter_fourcc(*'mp4v'), 300, (self.width, self.height))
         while step <= 10000:
             step += 1
-            dir_points = self.create_random_points_in_map(5)
+            dir_points = self.create_random_points_in_map(50)
             new_nodes = self.search_nearest_node_and_tree_generate_with_rewire(dir_points)
             for new_node in new_nodes:
                 '''draw dynamic map'''
                 cv.line(self.image, self.dis2pixel(new_node), self.dis2pixel(self.parent[tuple(new_node)]), Color().Purple, 1)
-                video_record.write(self.image)
                 '''draw dynamic map'''
                 if (new_node[0] - self.terminal[0]) ** 2 + (new_node[1] - self.terminal[1]) ** 2 <= self.stop_iteration ** 2:
                     self.tree.add(self.terminal)
                     self.parent[tuple(self.terminal)] = tuple(new_node)
-                    print('Successful')
+                    self.path_find()
+                    self.path_draw(self.waypoint, 'rrt_star.png', Color().Orange)
+                    for _ in range(10):
+                        video_record.write(self.image)
+                    video_record.release()
                     return True
+            video_record.write(self.image)
             if is_dynamic_show:
                 cv.imshow(self.name4image, self.image)
                 cv.waitKey(1)
-        print('Failed')
+        video_record.release()
         return False
 
 
 if __name__ == '__main__':
-    obs = [['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
+    obstacles = [['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
            ['rectangle', [3, 3.5],   [2.0, 5.0, 0.]],
            ['rectangle', [4, 1],     [1.5, 5.0, -20.]],
            ['pentagon',  [7, 8.5],   [1.0, 180.0]],
@@ -113,16 +117,23 @@ if __name__ == '__main__':
            ['pentagon',  [8.7, 6.4], [0.8, 108]],
            ['ellipse',   [1.0, 2.5], [0.8, 0.6, 60.0]],
            ['pentagon',  [6.5, 4.2], [0.46, 25.0]]]
-    obs = obstacle(obs).get_obs()
+    # obstacles = [
+    #     ['rectangle', [7, 8],   [2.0, 85.0, 0.]],
+    #     ['rectangle', [4, 6],   [3.0, 5.0, 0.]],
+    #     ['rectangle', [3, 3.5], [2.0, 5.0, 0.]],
+    #     ['rectangle', [3, 3.5], [3.0, 85.0, 0.]]
+    # ]
+    obstacles = obstacle(obstacles).get_obs()
     rrt_star = RRT_Star(width=400,
                         height=400,
                         x_size=10,
                         y_size=10,
                         image_name='samplingmap',
-                        start=[0.5, 0.5],
+                        start=[0.5, 0.5],       # 4.5, 8.5
                         terminal=[9.5, 9.5],
-                        obstacles=obs,
+                        obs=obstacles,
                         map_file=None)
     if rrt_star.rrt_star_main(is_dynamic_show=True):
-        rrt_star.path_find()
-        rrt_star.path_draw(rrt_star.waypoint, 'rrt_star.png')
+        print('Successful')
+    else:
+        print('Failed')
