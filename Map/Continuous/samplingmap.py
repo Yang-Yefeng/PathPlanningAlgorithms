@@ -85,7 +85,7 @@ class samplingmap:
         :return:                    bool
         """
         sub = np.array([point[i] - center[i] for i in [0, 1]])
-        trans = np.array([[cosd(rotate_angle), sind(rotate_angle)], [-sind(rotate_angle), cosd(rotate_angle)]])     # 已经对应逆时针转了 -rotate_angle
+        trans = np.array([[cosd(-rotate_angle), -sind(-rotate_angle)], [sind(-rotate_angle), cosd(-rotate_angle)]])
         [x, y] = list(np.dot(trans, sub))
         return (x / long) ** 2 + (y / short) ** 2 <= 1
 
@@ -117,60 +117,89 @@ class samplingmap:
         :param point2:              待测点2
         :return:                    bool
         """
+        if self.point_is_in_ellipse(long, short, rotate_angle, center, point1):
+            return True
+        if self.point_is_in_ellipse(long, short, rotate_angle, center, point2):
+            return True
         pt1 = [point1[i] - center[i] for i in [0, 1]]
-        pt2 = [point2[j] - center[j] for j in [0, 1]]
+        pt2 = [point2[j] - center[j] for j in [0, 1]]       # 平移至原点
 
-        pptt1 = [pt1[0]*cosd(rotate_angle) - pt1[1]*sind(rotate_angle), pt1[0]*sind(rotate_angle) + pt1[1]*cosd(rotate_angle)]
-        pptt2 = [pt2[0]*cosd(rotate_angle) - pt2[1]*sind(rotate_angle), pt2[0]*sind(rotate_angle) + pt2[1]*cosd(rotate_angle)]
-        c = math.sqrt(long ** 2 - short ** 2)
-        '''求椭圆焦点坐标'''
-        ellipse_1 = [-c, 0]
-        ellipse_2 = [c, 0]
-        '''求椭圆焦点坐标'''
+        pptt1 = [pt1[0]*cosd(-rotate_angle) - pt1[1]*sind(-rotate_angle), pt1[0]*sind(-rotate_angle) + pt1[1]*cosd(-rotate_angle)]
+        pptt2 = [pt2[0]*cosd(-rotate_angle) - pt2[1]*sind(-rotate_angle), pt2[0]*sind(-rotate_angle) + pt2[1]*cosd(-rotate_angle)]
+        # c = math.sqrt(long ** 2 - short ** 2)
+        # '''求椭圆焦点坐标'''
+        # ellipse_1 = [-c, 0]
+        # ellipse_2 = [c, 0]
+        # '''求椭圆焦点坐标'''
 
-        '''求直线方程'''
+        # '''求直线方程'''
+        # if pptt1[0] == pptt2[0]:
+        #     k = np.inf
+        #     b = pptt1[0]
+        # else:
+        #     k = (pptt2[1] - pptt1[1]) / (pptt2[0] - pptt1[0])
+        #     b = pptt1[1] - k * pptt1[0]
+        # '''求直线方程'''
+        #
+        # if k == np.inf:     # 如果是垂直线
+        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt1):
+        #         return True
+        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt2):
+        #         return True
+        #     if math.fabs(pptt1[0]) <= long and pptt1[1] * pptt2[1] < 0:
+        #         return True
+        #     return False
+        # elif k == 0:        # 如果是水平线
+        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt1):
+        #         return True
+        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt2):
+        #         return True
+        #     if math.fabs(b) <= short and pptt1[0] * pptt2[0] < 0:
+        #         return True
+        #     return False
+        # else:               # 其他
+        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt1):
+        #         return True
+        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt2):
+        #         return True
+        #     '''椭圆关于直线的对称点'''
+        #     ellipse_2_mirror = [((1 - k ** 2) * ellipse_2[0] + 2 * k * ellipse_2[1] - 2 * k * b) / (k ** 2 + 1),
+        #                         (2 * k * ellipse_2[0] + (k ** 2 - 1) * ellipse_2[1] + 2 * b) / (k ** 2 + 1)]
+        #     '''椭圆两焦点到该直线距离和的最小值'''
+        #     dis = self.dis_two_points(ellipse_1, ellipse_2_mirror)
+        #     if dis > 2 * long:
+        #         return False
+        #     else:
+        #         mirror_x = (ellipse_2_mirror[0] + ellipse_2[0]) / 2
+        #         if (mirror_x >= max(pptt1[0], pptt2[0])) or (mirror_x <= min(pptt1[0], pptt2[0])):
+        #             return False
+        #         else:
+        #             return True
+
         if pptt1[0] == pptt2[0]:
-            k = np.inf
-            b = pptt1[0]
+            if short ** 2 * (1 - pptt1[0] ** 2 / long ** 2) < 0:
+                return False
+            else:
+                y_cross = math.sqrt(short ** 2 * (1 - pptt1[0] ** 2 / long ** 2))
+                if max(pptt1[1], pptt2[1]) >= y_cross >= -y_cross >= min(pptt1[1], pptt2[1]):
+                    return True
+                else:
+                    return False
         else:
             k = (pptt2[1] - pptt1[1]) / (pptt2[0] - pptt1[0])
             b = pptt1[1] - k * pptt1[0]
-        '''求直线方程'''
-
-        if k == np.inf:     # 如果是垂直线
-            if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt1):
-                return True
-            if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt2):
-                return True
-            if math.fabs(pptt1[0]) <= long and pptt1[1] * pptt2[1] < 0:
-                return True
-            return False
-        elif k == 0:        # 如果是水平线
-            if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt1):
-                return True
-            if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt2):
-                return True
-            if math.fabs(b) <= short and pptt1[0] * pptt2[0] < 0:
-                return True
-            return False
-        else:               # 其他
-            if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt1):
-                return True
-            if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt2):
-                return True
-            '''椭圆关于直线的对称点'''
-            ellipse_2_mirror = [((1 - k ** 2) * ellipse_2[0] + 2 * k * ellipse_2[1] - 2 * k * b) / (k ** 2 + 1),
-                                (2 * k * ellipse_2[0] + (k ** 2 - 1) * ellipse_2[1] + 2 * b) / (k ** 2 + 1)]
-            '''椭圆两焦点到该直线距离和的最小值'''
-            dis = self.dis_two_points(ellipse_1, ellipse_2_mirror)
-            if dis > 2 * long:
+            ddelta = (long * short) ** 2 * (short ** 2 + long ** 2 * k ** 2 - b ** 2)
+            if ddelta < 0:
+                # print('Delat is negative..')
                 return False
             else:
-                mirror_x = (ellipse_2_mirror[0] + ellipse_2[0]) / 2
-                if (mirror_x >= max(pptt1[0], pptt2[0])) or (mirror_x <= min(pptt1[0], pptt2[0])):
-                    return False
-                else:
+                x_medium = -(k * b * long ** 2) / (short ** 2 + long ** 2 * k ** 2)
+                if max(pptt1[0], pptt2[0]) >= x_medium >= min(pptt1[0], pptt2[0]):
+                    # print('Yes')
                     return True
+                else:
+                    # print('Haha, too short...')
+                    return False
 
     def line_is_in_poly(self, center, r, points, point1, point2):
         if self.point_is_in_poly(center, r, points, point1):
@@ -209,7 +238,7 @@ class samplingmap:
                 '''如果变换后的cd纵坐标在x轴的异侧(包括X轴)'''
                 if cc[0] == dd[0]:
                     '''k == inf'''
-                    if  min(bb) <= cc[0] <= max(bb):
+                    if min(bb) <= cc[0] <= max(bb):
                         return True
                     else:
                         continue
