@@ -185,35 +185,58 @@ class RRT_Informed_Star(RRT_Star):
 
 
 if __name__ == '__main__':
-    # obstacles = [
-    #         ['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
-    #         # ['rectangle', [3, 3.5],   [2.0, 5.0, 0.]],
-    #         ['rectangle', [4, 1],     [1.5, 5.0, -20.]],
-    #         # ['pentagon',  [7, 8.5],   [1.0, 180.0]],
-    #         ['hexagon',   [8.0, 2],   [1.0, 30.0]],
-    #         # ['triangle',  [8.0, 5],   [1.0, 40.0, 20.0]],
-    #         ['hexagon',   [5.5, 2],   [0.5, 0.0]],
-    #         ['circle',    [6, 6],     [1.0]],
-    #         # ['ellipse',   [3, 8],     [2.6, 0.6, -20.0]],
-    #         ['pentagon',  [3.4, 6.0], [0.6, 50]],
-    #         ['pentagon',  [8.7, 6.4], [0.8, 108]],
-    #         # ['ellipse',   [1.0, 2.5], [0.8, 0.6, 60.0]],
-    #         ['pentagon',  [6.5, 4.2], [0.46, 25.0]]
-    # ]
-    obstacles = [
-        ['rectangle', [3, 5],   [2.0, 85.0, 45.]],
-        ['rectangle', [4.5, 6],   [2.0, 85.0, 0.]],
-        ['rectangle', [6, 3], [2.0, 85.0, 0.]],
-        ['rectangle', [4.5, 8], [2.0, 5.0, 0.]]
+    obstacles1 = [
+        ['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
+        ['rectangle', [3, 3.5],   [2.0, 5.0, 0.]],
+        ['rectangle', [4, 1],     [1.5, 5.0, -20.]],
+        ['pentagon',  [7, 8.5],   [1.0, 180.0]],
+        ['hexagon',   [8.0, 2],   [1.0, 30.0]],
+        ['triangle',  [8.0, 5],   [1.0, 40.0, 20.0]],
+        ['hexagon',   [5.5, 2],   [0.5, 0.0]],
+        ['circle',    [6, 6],     [1.0]],
+        ['ellipse',   [3, 8],     [2.6, 0.6, -20.0]],
+        ['pentagon',  [3.4, 6.0], [0.6, 50]],
+        ['pentagon',  [8.7, 6.4], [0.8, 108]],
+        ['ellipse',   [1.0, 2.5], [0.8, 0.6, 60.0]],
+        ['pentagon',  [6.5, 4.2], [0.46, 25.0]]]
+    obstacles2 = [
+        ['rectangle', [7, 8],   [2.0, 85.0, 0.]],
+        ['rectangle', [4, 6],   [3.2, 5.0, 0.]],
+        ['rectangle', [3, 3.5], [2.0, 5.0, 0.]],
+        ['rectangle', [5, 2], [2.0, 85.0, 0.]]
     ]
+    obstacles3 = [
+        ['circle', [6, 6], [1.2]],
+        ['circle', [3, 3], [1.0]],
+        ['circle', [6, 2], [1.0]],
+        ['circle', [1, 9], [1.0]],
+        ['circle', [4, 7], [1.0]],
+        ['circle', [9, 7], [0.4]],
+        ['circle', [3, 5], [1.0]],
+        ['circle', [8, 5], [0.5]],
+        ['circle', [1, 6], [1.0]],
+        ['circle', [8, 1], [0.5]],
+        ['circle', [8, 8], [0.5]],
+        ['circle', [7.5, 7], [0.5]],
+    ]
+    obstacles4 = [
+        ['ellipse', [6, 6], [1.6, 0.6, -20.0]],
+        ['ellipse', [3, 3], [1.6, 1.0, -15.0]],
+        ['ellipse', [6, 2], [1.6, 0.4, -10.0]],
+        ['ellipse', [5, 9], [3.6, 0.8, -5.0]],
+        ['ellipse', [4, 7], [1.6, 0.2, 0.0]],
+        ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
+        # ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
+    ]
+    obstacles = obstacles4
     obstacles = obstacle(obstacles).get_obs()
     informed_rrt_star = RRT_Informed_Star(width=400,
                                           height=400,
                                           x_size=10,
                                           y_size=10,
                                           image_name='samplingmap',
-                                          start=[3, 6],       # 4.5, 8.5
-                                          terminal=[6, 6],
+                                          start=[0.5, 0.5],       # 4.5, 8.5
+                                          terminal=[9.5, 9.5],
                                           obs=obstacles,
                                           map_file=None)
     if informed_rrt_star.informed_rrt_star_main(is_dynamic_show=True):
