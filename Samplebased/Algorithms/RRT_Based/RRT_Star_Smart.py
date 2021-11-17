@@ -1,7 +1,9 @@
-import copy
-from Map.Continuous.obstacle import obstacle
-import cv2 as cv
-from Map.Color.Color import Color
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
+                "/../../../../PathPlanningAlgorithms/")
+
+from Samplebased.Algorithms.RRT_Based import *
 from Samplebased.Algorithms.RRT_Based.RRT_Star import RRT_Star
 
 
