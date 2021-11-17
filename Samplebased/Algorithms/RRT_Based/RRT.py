@@ -1,11 +1,9 @@
-import math
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
+                "/../../../../PathPlanningAlgorithms/")
 
-from Samplebased.Base import KDTree
-from Map.Continuous.samplingmap import samplingmap
-from Map.Continuous.obstacle import obstacle
-import random
-import cv2 as cv
-from Map.Color.Color import Color
+from Samplebased.Algorithms.RRT_Based import *
 
 
 class RRT(samplingmap):
