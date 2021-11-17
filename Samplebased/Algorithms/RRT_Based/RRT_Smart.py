@@ -1,7 +1,9 @@
-import copy
-from Map.Continuous.obstacle import obstacle
-import cv2 as cv
-from Map.Color.Color import Color
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
+                "/../../../../PathPlanningAlgorithms/")
+
+from Samplebased.Algorithms.RRT_Based import *
 from Samplebased.Algorithms.RRT_Based.RRT import RRT
 
 
@@ -111,7 +113,7 @@ if __name__ == '__main__':
                           x_size=10,
                           y_size=10,
                           image_name='samplingmap',
-                          start=[0.5, 0.5], # 4.5, 8.5
+                          start=[0.5, 0.5],         # 4.5, 8.5
                           terminal=[9.5, 9.5],
                           obstacles=obstacles,
                           map_file=None)
