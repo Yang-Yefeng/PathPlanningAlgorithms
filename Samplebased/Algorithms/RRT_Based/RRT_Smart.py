@@ -71,7 +71,10 @@ if __name__ == '__main__':
         ['pentagon',  [3.4, 6.0], [0.6, 50]],
         ['pentagon',  [8.7, 6.4], [0.8, 108]],
         ['ellipse',   [1.0, 2.5], [0.8, 0.6, 60.0]],
-        ['pentagon',  [6.5, 4.2], [0.46, 25.0]]]
+        ['pentagon',  [6.5, 4.2], [0.46, 25.0]],
+        ['heptagon',  [4, 2.2],     [1.0, 0.]],
+        ['octagon',   [6, 4],     [1.0, 0.]],
+    ]
     obstacles2 = [
         ['rectangle', [7, 8],   [2.0, 85.0, 0.]],
         ['rectangle', [4, 6],   [3.2, 5.0, 0.]],
@@ -101,7 +104,7 @@ if __name__ == '__main__':
         ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
         ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
-    obstacles = obstacles4
+    obstacles = obstacles1
     obstacles = obstacle(obstacles).get_obs()
     rrt_smart = RRT_Smart(width=400,
                           height=400,
