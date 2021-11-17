@@ -11,9 +11,11 @@ def cosd(theta):
 class obstacle:
     def __init__(self, obs):
         self.name_set = ['triangle',        # 三角形(等腰)(就是因为描述方便)(格式统一)
-                         'rectangle',       # 四边形(利用矩形外接圆的方式去定义)
-                         'pentagon',        # 五边形(正)(利用矩形外接圆的方式去定义)
-                         'hexagon',         # 六边形(正)(利用矩形外接圆的方式去定义)
+                         'rectangle',       # 四边形(利用外接圆的方式去定义)
+                         'pentagon',        # 五边形(正)(利用外接圆的方式去定义)
+                         'hexagon',         # 六边形(正)(利用外接圆的方式去定义)
+                         'heptagon'         # 七边形(正)(利用外接圆的方式去定义)
+                         'octagon',         # 八边形(正)(利用外接圆的方式去定义)
                          'circle',          # 圆形
                          'ellipse']         # 椭圆形
         self.obs = self.set_obs(obs)        # the formation is ['name', [r], [points]]
@@ -21,6 +23,8 @@ class obstacle:
             rectangle       ['rectangle', [pt1, pt2], [r, theta0, theta_bias]]             pt1 and pt2 are the coordinate of the center
             pentagon        ['pentagon',  [pt1, pt2], [r, theta_bias]]
             hexagon         ['hexagon',   [pt1, pt2], [r, theta_bias]]
+            heptagon        ['heptagon',  [pt1, pt2], [r, theta_bias]]
+            octagon         ['octagon',   [pt1, pt2], [r, theta_bias]]
             circle          ['circle',    [pt1, pt2], [r]]
             ellipse         ['ellipse',   [pt1, pt2], [long_axis, short_axis, theta_bias]]'''
 
@@ -57,6 +61,18 @@ class obstacle:
                 pt = []
                 for i in range(6):
                     pt.append([x + r * cosd(90 + 60 * i + theta_bias), y + r * sind(90 + 60 * i + theta_bias)])
+                obs.append([name, [x, y, r], pt])
+            elif name == 'heptagon':
+                [r, theta_bias] = constraints
+                pt = []
+                for i in range(7):
+                    pt.append([x + r * cosd(90 + 360 / 7 * i + theta_bias), y + r * sind(90 + 360 / 7 * i + theta_bias)])
+                obs.append([name, [x, y, r], pt])
+            elif name == 'octagon':
+                [r, theta_bias] = constraints
+                pt = []
+                for i in range(8):
+                    pt.append([x + r * cosd(90 + 45 * i + theta_bias), y + r * sind(90 + 45 * i + theta_bias)])
                 obs.append([name, [x, y, r], pt])
             elif name == 'circle':
                 obs.append([name, constraints, [x, y]])
