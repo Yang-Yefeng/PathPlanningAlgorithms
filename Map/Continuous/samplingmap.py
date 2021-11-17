@@ -126,55 +126,6 @@ class samplingmap:
 
         pptt1 = [pt1[0]*cosd(-rotate_angle) - pt1[1]*sind(-rotate_angle), pt1[0]*sind(-rotate_angle) + pt1[1]*cosd(-rotate_angle)]
         pptt2 = [pt2[0]*cosd(-rotate_angle) - pt2[1]*sind(-rotate_angle), pt2[0]*sind(-rotate_angle) + pt2[1]*cosd(-rotate_angle)]
-        # c = math.sqrt(long ** 2 - short ** 2)
-        # '''求椭圆焦点坐标'''
-        # ellipse_1 = [-c, 0]
-        # ellipse_2 = [c, 0]
-        # '''求椭圆焦点坐标'''
-
-        # '''求直线方程'''
-        # if pptt1[0] == pptt2[0]:
-        #     k = np.inf
-        #     b = pptt1[0]
-        # else:
-        #     k = (pptt2[1] - pptt1[1]) / (pptt2[0] - pptt1[0])
-        #     b = pptt1[1] - k * pptt1[0]
-        # '''求直线方程'''
-        #
-        # if k == np.inf:     # 如果是垂直线
-        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt1):
-        #         return True
-        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt2):
-        #         return True
-        #     if math.fabs(pptt1[0]) <= long and pptt1[1] * pptt2[1] < 0:
-        #         return True
-        #     return False
-        # elif k == 0:        # 如果是水平线
-        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt1):
-        #         return True
-        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt2):
-        #         return True
-        #     if math.fabs(b) <= short and pptt1[0] * pptt2[0] < 0:
-        #         return True
-        #     return False
-        # else:               # 其他
-        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt1):
-        #         return True
-        #     if self.point_is_in_ellipse(long, short, 0, [0, 0], pptt2):
-        #         return True
-        #     '''椭圆关于直线的对称点'''
-        #     ellipse_2_mirror = [((1 - k ** 2) * ellipse_2[0] + 2 * k * ellipse_2[1] - 2 * k * b) / (k ** 2 + 1),
-        #                         (2 * k * ellipse_2[0] + (k ** 2 - 1) * ellipse_2[1] + 2 * b) / (k ** 2 + 1)]
-        #     '''椭圆两焦点到该直线距离和的最小值'''
-        #     dis = self.dis_two_points(ellipse_1, ellipse_2_mirror)
-        #     if dis > 2 * long:
-        #         return False
-        #     else:
-        #         mirror_x = (ellipse_2_mirror[0] + ellipse_2[0]) / 2
-        #         if (mirror_x >= max(pptt1[0], pptt2[0])) or (mirror_x <= min(pptt1[0], pptt2[0])):
-        #             return False
-        #         else:
-        #             return True
 
         if pptt1[0] == pptt2[0]:
             if short ** 2 * (1 - pptt1[0] ** 2 / long ** 2) < 0:
