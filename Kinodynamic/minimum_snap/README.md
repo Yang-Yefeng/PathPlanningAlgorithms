@@ -1,6 +1,8 @@
 # Minimum snap
 ## Basic principle
 This package implements minimum snap to generate a trajectory with fixed nodes and time at each node.
+The normal formula is 
+$minimum \frac{1}{2}x^{T}Qx + P^{T}x$, s.t. $Ax=B, Gx\leq h$
 
 ## Run
 By running 'minimum_snap.py', you can get the result of the simulation.
