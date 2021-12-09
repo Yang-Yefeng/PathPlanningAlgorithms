@@ -6,17 +6,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def draw_trajectory_plt(_x: list, _y: list, _pts_x: list, _pts_y: list):
-    plt.xlabel("x(m)")
-    plt.ylabel("y(m)")
-    plt.title('minimum snap')
-    plt.grid(True)
-    for i in range(len(_x)):
-        plt.plot(_x[i], _y[i])
-    plt.plot(_pts_x, _pts_y, 'ro')
-    plt.show()
-
-
 def get_nodes_4_mini_jerk_using_opencv_callback(_map: samplingmap) -> list:
     nodes = []
     node_max = 10
@@ -62,16 +51,26 @@ def draw_trajectory_cv(_map: samplingmap, x: list, y: list, draw: bool):
     assert len(x) > 0
     assert len(x[0]) == len(y[0])
     for i in range(len(x)):
-        xx = x[i]
-        yy = y[i]
         color = Color().random_color_by_BGR()
-        for j in range(len(xx) - 1):
-            pt1_int = _map.dis2pixel([xx[j], yy[j]])
-            pt2_int = _map.dis2pixel([xx[j + 1], yy[j + 1]])
+        for j in range(len(x[i]) - 1):
+            pt1_int = _map.dis2pixel([x[i][j], y[i][j]])
+            pt2_int = _map.dis2pixel([x[i][j + 1], y[i][j + 1]])
             cv.line(_map.image, pt1_int, pt2_int, color, 2)
+    cv.imwrite('minimum_snap.png', _map.image)
     if draw:
         cv.imshow(_map.name4image, _map.image)
         cv.waitKey(0)
+
+
+def draw_trajectory_plt(_x: list, _y: list, _pts_x: list, _pts_y: list):
+    plt.xlabel("x(m)")
+    plt.ylabel("y(m)")
+    plt.title('minimum snap')
+    plt.grid(True)
+    for i in range(len(_x)):
+        plt.plot(_x[i], _y[i])
+    plt.plot(_pts_x, _pts_y, 'ro')
+    plt.show()
 
 
 class minimum_snap:
@@ -147,8 +146,7 @@ class minimum_snap:
         print('Q size:', self.Q.size)
 
     def get_P(self):
-        p = [0.00 for _ in range((self.order + 1) * self.n_trajectory)]
-        self.P = cp.matrix(np.array(p, dtype=float), ((self.order + 1) * self.n_trajectory, 1))
+        self.P = cp.matrix(np.array(np.zeros(((self.order + 1) * self.n_trajectory, 1)), dtype=float), ((self.order + 1) * self.n_trajectory, 1))
         print('P size:', self.P.size)
 
     def get_coefficient_cell2(self, time: float, flag: str) -> list:
@@ -260,26 +258,10 @@ class minimum_snap:
         print('B size:', self.B.size)
 
     def save_matrices2csv(self, path):
-        data = []
-        for i in range(self.Q.size[0]):
-            data.append(list(self.Q[i, :]))
-        pd.DataFrame(data).to_csv(path + 'Q.csv', encoding='gbk', header=False, index=False)
-
-        data = []
-        for i in range(self.P.size[0]):
-            data.append(list(self.P[i, :]))
-        pd.DataFrame(data).to_csv(path + 'P.csv', encoding='gbk', header=False, index=False)
-
-        data = []
-        for i in range(self.A.size[0]):
-            data.append(list(self.A[i, :]))
-        pd.DataFrame(data).to_csv(path + 'A.csv', encoding='gbk', header=False, index=False)
-
-        data = []
-        for i in range(self.B.size[0]):
-            data.append(list(self.B[i, :]))
-        pd.DataFrame(data).to_csv(path + 'B.csv', encoding='gbk', header=False, index=False)
-
+        pd.DataFrame([list(self.Q[i, :]) for i in range(self.Q.size[0])]).to_csv(path + 'Q.csv', encoding='gbk', header=False, index=False)
+        pd.DataFrame([list(self.P[i, :]) for i in range(self.P.size[0])]).to_csv(path + 'P.csv', encoding='gbk', header=False, index=False)
+        pd.DataFrame([list(self.A[i, :]) for i in range(self.A.size[0])]).to_csv(path + 'A.csv', encoding='gbk', header=False, index=False)
+        pd.DataFrame([list(self.B[i, :]) for i in range(self.B.size[0])]).to_csv(path + 'B.csv', encoding='gbk', header=False, index=False)
         pd.DataFrame(self.coefficient).to_csv(path + 'coefficient.csv', encoding='gbk', header=False, index=False)
 
     def minimum_snap(self):
@@ -289,16 +271,15 @@ class minimum_snap:
         self.get_A()
         self.get_B()
         sol = cp.solvers.qp(self.Q, self.P, None, None, self.A, self.B)
-        res = sol['x']
         for i in range(self.n_trajectory):
-            self.coefficient[i] = res[i * (self.order + 1): (i + 1) * (self.order + 1)]
+            self.coefficient[i] = sol['x'][i * (self.order + 1): (i + 1) * (self.order + 1)]
 
     def get_trajectory_points(self, points_per_trajectory: int = 100) -> list:
         trajectory = []
         for i in range(self.n_trajectory):      # i 是轨迹编号
             t = np.linspace(self.time_per_node[i], self.time_per_node[i + 1], points_per_trajectory)
             sub_trajectory = np.zeros((1, points_per_trajectory)).squeeze()
-            for j in range(self.order + 1):     # j 是 t 的次数
+            for j in range(self.order + 1):     # j 是 time 的次数
                 sub_trajectory += self.coefficient[i][j] * t ** j
             trajectory.append(list(sub_trajectory))
         return trajectory
