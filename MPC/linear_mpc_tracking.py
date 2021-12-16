@@ -101,7 +101,7 @@ class Linear_MPC:
 
 if __name__ == '__main__':
     mpc = Linear_MPC()
-    t_teminal = 400
+    t_teminal = 40
     time = np.arange(0, t_teminal + mpc.dt, mpc.dt)
     px, py, pz = [], [], []
     vx, vy, vz = [], [], []
@@ -179,7 +179,10 @@ if __name__ == '__main__':
                               'az': az,
                               'jx': jx,
                               'jy': jy,
-                              'jz': jz})
+                              'jz': jz,
+                              'px_ref': prefX,
+                              'py_ref': prefY,
+                              'pz_ref': prefZ})
     dataframe.to_csv("MPC_linear_track.csv", index=False, sep=',')
     # plot
     fig1 = plt.figure()
