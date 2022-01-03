@@ -80,7 +80,7 @@ class RRT_Star(RRT):
 
     def rrt_star_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_star.mp4', cv.VideoWriter_fourcc(*'mp4v'), 300, (self.width, self.height))
+        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_star.mp4', cv.VideoWriter_fourcc(*'mp4v'), 120, (self.width, self.height))
         while step <= 10000:
             step += 1
             dir_points = self.create_random_points_in_map(50)
@@ -94,7 +94,7 @@ class RRT_Star(RRT):
                     self.parent[tuple(self.terminal)] = tuple(new_node)
                     self.path_find()
                     self.path_draw(self.waypoint, 'rrt_star.png', Color().Orange)
-                    for _ in range(10):
+                    for _ in range(120):
                         video_record.write(self.image)
                     video_record.release()
                     return True
@@ -150,7 +150,14 @@ if __name__ == '__main__':
         ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
         ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
-    obstacles = obstacles4
+    obstacles5 = [
+        ['rectangle', [3, 1], [2.0, 10.0, 0.]],
+        ['rectangle', [2, 3], [2.0, 5.0, 0.]],
+        ['rectangle', [5, 5], [3.0, 5.0, 0.]],
+        ['rectangle', [4, 6.5], [2.5, 3.0, 0.]],
+        ['rectangle', [8, 8], [2.0, 5.0, 0.]],
+    ]
+    obstacles = obstacles5
     obstacles = obstacle(obstacles).get_obs()
     rrt_star = RRT_Star(width=400,
                         height=400,

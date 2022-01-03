@@ -28,7 +28,7 @@ class RRT_Smart(RRT):
 
     def rrt_smart_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_smart.mp4', cv.VideoWriter_fourcc(*'mp4v'), 300, (self.width, self.height))
+        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_smart.mp4', cv.VideoWriter_fourcc(*'mp4v'), 120, (self.width, self.height))
         while step <= 10000:
             step += 1
             dir_points = self.create_random_points_in_map(50)
@@ -47,7 +47,7 @@ class RRT_Smart(RRT):
                     self.smart_optimize()
                     self.path_find()
                     self.path_draw(self.waypoint, 'rrt_smart.png', Color().Red)
-                    for _ in range(10):
+                    for _ in range(120):
                         video_record.write(self.image)
                     video_record.release()
                     return True
@@ -106,14 +106,14 @@ if __name__ == '__main__':
         ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
         ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
-    obstacles = obstacles1
+    obstacles = obstacles2
     obstacles = obstacle(obstacles).get_obs()
     rrt_smart = RRT_Smart(width=400,
                           height=400,
                           x_size=10,
                           y_size=10,
                           image_name='samplingmap',
-                          start=[0.5, 0.5],         # 4.5, 8.5
+                          start=[4.5, 8.5],         # 0.5, 0.5
                           terminal=[9.5, 9.5],
                           obstacles=obstacles,
                           map_file=None)

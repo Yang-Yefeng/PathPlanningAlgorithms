@@ -88,7 +88,7 @@ class RRT_Connect(samplingmap):
 
     def rrt_connect_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_connect.mp4', cv.VideoWriter_fourcc(*'mp4v'), 300, (self.width, self.height))
+        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_connect.mp4', cv.VideoWriter_fourcc(*'mp4v'), 120, (self.width, self.height))
         while step < 10000:
             step += 1
             dir_points = self.create_random_points_in_map(50)
@@ -110,34 +110,13 @@ class RRT_Connect(samplingmap):
             if connect:
                 self.path_find()
                 self.path_draw(self.waypoint, 'rrt_connect.png', Color().Orange)
-                for _ in range(10):
+                for _ in range(120):
                     video_record.write(self.image)
                 video_record.release()
                 return True
         print('Failed')
         video_record.release()
         return False
-
-    # def path_find(self):
-    #     s = tuple(self.tree_connect[0])
-    #     while True:
-    #         ss = self.parent_start[s]
-    #         sss = ss
-    #         self.parent_terminal[sss] = s
-    #         s = ss
-    #         if ss == tuple(self.start):
-    #             break
-    #     self.parent_terminal[tuple(self.tree_connect[0])] = tuple(self.tree_connect[1])
-    #
-    #     self.parent = self.parent_terminal
-    #     self.waypoint = [tuple(self.start)]
-    #     s = tuple(self.start)
-    #     while True:
-    #         s = self.parent[s]
-    #         self.waypoint.append(s)
-    #         if s == tuple(self.terminal):
-    #             break
-    #     print('Path find finished!')
 
     def path_find(self):
         s = tuple(self.tree_connect[1])
@@ -205,7 +184,7 @@ if __name__ == '__main__':
         ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
         ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
-    obstacles = obstacles2
+    obstacles = obstacles4
     obstacles = obstacle(obstacles).get_obs()
     rrt_connect = RRT_Connect(width=400,
                               height=400,

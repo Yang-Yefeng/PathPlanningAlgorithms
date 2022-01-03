@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
 
 from Map.Color.Color import Color
 
+
 def sind(theta):
     return math.sin(theta / 180.0 * math.pi)
 
@@ -28,17 +29,18 @@ class samplingmap:
                  start: list = None,
                  terminal: list = None,
                  obs=None,
-                 map_file=None):
+                 map_file=None,
+                 draw=True):
         self.width = width
         self.height = height
         if map_file is None:
             self.x_size = x_size
             self.y_size = y_size
             self.name4image = image_name
-            # self.start = self.start = np.array([0.5, 0.5]) if start is None else np.array(start)
-            self.start = self.start = [0.5, 0.5] if start is None else start
-            # self.terminal = np.array([x_size - 0.5, y_size - 0.5]) if terminal is None else np.array(terminal)
-            self.terminal = [x_size - 0.5, y_size - 0.5] if terminal is None else terminal
+            # self.start = [0.5, 0.5] if start is None else start
+            # self.terminal = [x_size - 0.5, y_size - 0.5] if terminal is None else terminal
+            self.start = start
+            self.terminal = terminal
             self.obs = obs
             self.obs_num = 0 if obs is None else len(obs)
         else:
@@ -50,33 +52,58 @@ class samplingmap:
         self.image_white = self.image.copy()        # 纯白图
 
         self.name4image = image_name
-        self.x_offset = int(self.width / 20)  # leave blank for image
-        self.y_offset = int(self.height / 20)
+        self.x_offset = self.width / 20  # leave blank for image
+        self.y_offset = self.height / 20
         self.pixel_per_meter = min((self.width - 2 * self.x_offset) / self.x_size,
                                    (self.height - 2 * self.y_offset) / self.y_size)
 
-        self.map_draw()
+        self.map_draw(draw)
         self.image_temp = self.image.copy()
 
-    def point_is_out(self, point: list):
+    def point_is_out(self, point: list) -> bool:
+        """
+        :brief:         if the robot is out
+        :param point:   the position of the robot
+        :return:        bool
+        """
         return min(point) < 0 or point[0] >= self.x_size or point[1] >= self.y_size
 
     @staticmethod
-    def cross_product(vec1, vec2):
+    def cross_product(vec1: list, vec2: list) -> float:
+        """
+        :brief:         cross product of two vectors
+        :param vec1:    vector1
+        :param vec2:    vector2
+        :return:        cross product
+        """
         return vec1[0] * vec2[1] - vec2[0] * vec1[1]
 
     @staticmethod
-    def dis_two_points(point1, point2):
+    def dis_two_points(point1: list, point2: list) -> float:
+        """
+        :brief:         euclidean distance between two points
+        :param point1:  point1
+        :param point2:  point2
+        :return:        euclidean distance
+        """
         return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
 
     @staticmethod
-    def point_is_in_circle(center, r, point):
+    def point_is_in_circle(center: list, r: float, point: list) -> bool:
+        """
+        :brief:         if a point is in a circle
+        :param center:  center of the circle
+        :param r:       radius of the circle
+        :param point:   point
+        :return:        if the point is in the circle
+        """
         sub = [center[i] - point[i] for i in [0, 1]]
         return np.linalg.norm(sub) <= r
 
     @staticmethod
-    def point_is_in_ellipse(long, short, rotate_angle, center, point):
+    def point_is_in_ellipse(long: float, short: float, rotate_angle: float, center: list, point: list) -> bool:
         """
+        :brief:                     判断点是否在椭圆内部
         :param long:                长轴
         :param short:               短轴
         :param rotate_angle:        椭圆自身的旋转角度
@@ -89,9 +116,18 @@ class samplingmap:
         [x, y] = list(np.dot(trans, sub))
         return (x / long) ** 2 + (y / short) ** 2 <= 1
 
-    def point_is_in_poly(self, center, r, points, point):
-        if self.point_is_in_circle(center, r, point) is False:
-            return False
+    def point_is_in_poly(self, center, r, points: list, point: list) -> bool:
+        """
+        :brief:                     if a point is in a polygon
+        :param center:              center of the circumcircle of the polygon
+        :param r:                   radius of the circumcircle of the polygon
+        :param points:              points of the polygon
+        :param point:               the point to be tested
+        :return:                    if the point is in the polygon
+        """
+        if center and r:
+            if self.point_is_in_circle(center, r, point) is False:
+                return False
         '''若在多边形对应的外接圆内，再进行下一步判断'''
         l_pts = len(points)
         res = False
@@ -104,11 +140,20 @@ class samplingmap:
         if res is True:
             return True
 
-    def line_is_in_circle(self, center, r, point1, point2):
+    def line_is_in_circle(self, center: list, r: float, point1: list, point2: list) -> bool:
+        """
+        :brief:             if a circle and a line segment have an intersection
+        :param center:      center of the circle
+        :param r:           radius of the circle
+        :param point1:      point1 of the line segment
+        :param point2:      point2 of t he line segment
+        :return:            if the circle and the line segment have an intersection
+        """
         return self.line_is_in_ellipse(r, r, 0, center, point1, point2)
 
-    def line_is_in_ellipse(self, long, short, rotate_angle, center, point1, point2):
+    def line_is_in_ellipse(self, long: float, short: float, rotate_angle: float, center: list, point1: list, point2: list) -> bool:
         """
+        :brief:                     判断线段与椭圆是否有交点
         :param long:                长轴
         :param short:               短轴
         :param rotate_angle:        椭圆自身的旋转角度
@@ -152,7 +197,16 @@ class samplingmap:
                     # print('Haha, too short...')
                     return False
 
-    def line_is_in_poly(self, center, r, points, point1, point2):
+    def line_is_in_poly(self, center: list, r: float, points: list, point1: list, point2: list) -> bool:
+        """
+        :brief:             if a polygon and a line segment have an intersection
+        :param center:      center of the circumcircle of the polygon
+        :param r:           radius of the circumcircle of the polygon
+        :param points:      points of the polygon
+        :param point1:      the first point of the line segment
+        :param point2:      the second point of the line segment
+        :return:            if the polygon and the line segment have an intersection
+        """
         if self.point_is_in_poly(center, r, points, point1):
             print('Something wrong happened...')
             return True
@@ -173,6 +227,7 @@ class samplingmap:
             d = [d[i] - a[i] for i in [0, 1]]
             a = [a[i] - a[i] for i in [0, 1]]
             '''通过坐标变换将a点变到原点'''
+
             '''通过坐标旋转将b点变到与X重合'''
             l_ab = self.dis_two_points(a, b)     # length of ab
             cos = b[0] / l_ab
@@ -181,6 +236,7 @@ class samplingmap:
             cc = [cos * c[0] + sin*c[1], -sin*c[0] + cos*c[1]]
             dd = [cos * d[0] + sin*d[1], -sin*d[0] + cos*d[1]]
             '''通过坐标旋转将b点变到与X重合'''
+
             if cc[1] * dd[1] > 0:
                 '''如果变换后的cd纵坐标在x轴的同侧'''
                 # return False
@@ -197,14 +253,27 @@ class samplingmap:
                     '''k != inf'''
                     k_cd = (dd[1] - cc[1]) / (dd[0] - cc[0])
                     b_cd = cc[1] - k_cd * cc[0]
-                    x_cross = -b_cd / k_cd
-                    if min(bb) <= x_cross <= max(bb):
-                        return True
+                    if k_cd != 0:
+                        x_cross = -b_cd / k_cd
+                        if min(bb) <= x_cross <= max(bb):
+                            return True
+                        else:
+                            continue
                     else:
-                        continue
+                        '''k_cd == 0'''
+                        if (min(bb) <= cc[0] <= max(bb)) or (min(bb) <= dd[0] <= max(bb)):
+                            return True
+                        else:
+                            continue
         return False
 
-    def line_is_in_obs(self, point1, point2) -> bool:
+    def line_is_in_obs(self, point1: list, point2: list) -> bool:
+        """
+        :brief:             if a line segment has intersections with obstacles
+        :param point1:      the first point of the line segment
+        :param point2:      the second point of the line segment
+        :return:            if the line segment has intersections with obstacles
+        """
         for _obs in self.obs:
             if _obs[0] == 'circle':
                 if self.line_is_in_circle(_obs[2], _obs[1][0], point1, point2):
@@ -224,6 +293,11 @@ class samplingmap:
         return False
 
     def point_is_in_obs(self, point: list) -> bool:
+        """
+        :brief:             if a point is in obstacles
+        :param point:       point
+        :return:            if the point is in obstacles
+        """
         for _obs in self.obs:
             if _obs[0] == 'circle':
                 if self.point_is_in_circle(_obs[2], _obs[1][0], point):
@@ -242,20 +316,39 @@ class samplingmap:
                     continue
         return False
 
-    def pixel2dis(self, point):
-        x = (point[0] - self.x_offset) / self.pixel_per_meter
-        y = (self.height - self.y_offset - point[1]) / self.pixel_per_meter
+    def pixel2dis(self, coord) -> list:
+        """
+        :brief:             the transformation between pixels in image and distance in physical world
+        :param coord:       position in image coordinate
+        :return:            position in physical world
+        """
+        x = (coord[0] - self.x_offset) / self.pixel_per_meter
+        y = (self.height - self.y_offset - coord[1]) / self.pixel_per_meter
         return [x, y]
 
-    def dis2pixel(self, coord) -> tuple:
+    def dis2pixel(self, coord: list) -> tuple:
+        """
+        :brief:         the transformation of coordinate between physical world and image
+        :param coord:   position in physical world
+        :return:        position in image coordinate
+        """
         x = self.x_offset + coord[0] * self.pixel_per_meter
         y = self.height - self.y_offset - coord[1] * self.pixel_per_meter
         return int(x), int(y)
 
     def length2pixel(self, _l):
+        """
+        :brief:         the transformation of distance between physical world and image
+        :param _l:      length in physical world
+        :return:        length in image
+        """
         return int(_l * self.pixel_per_meter)
 
     def test_func_point_is_in_obs_using_opencv_callback(self):
+        """
+        :brief:         as shown in the name of the function
+        :return:        None
+        """
         def callback(event, x, y, flags, param):
             self.image_temp = self.image.copy()
             if event == cv.EVENT_MOUSEMOVE:         # 鼠标左键抬起
@@ -278,8 +371,11 @@ class samplingmap:
         cv.rectangle(self.image, self.dis2pixel([0., 0.]), self.dis2pixel([self.x_size, self.y_size]), Color().Black, 2)
 
     def map_draw_start_terminal(self):
-        cv.circle(self.image, self.dis2pixel(self.start), 5, Color().Red, -1)
-        cv.circle(self.image, self.dis2pixel(self.terminal), 5, Color().Blue, -1)
+        if self.start and self.terminal:
+            cv.circle(self.image, self.dis2pixel(self.start), 5, Color().Red, -1)
+            cv.circle(self.image, self.dis2pixel(self.terminal), 5, Color().Blue, -1)
+        else:
+            print('No start point or terminal point')
 
     def map_draw_obs(self):
         if self.obs is None:
@@ -300,12 +396,13 @@ class samplingmap:
             else:
                 cv.fillConvexPoly(self.image, points=np.array([list(self.dis2pixel(pt)) for pt in pts]), color=Color().DarkGray)
 
-    def map_draw(self):
+    def map_draw(self, show=True):
         self.map_draw_boundary()
         self.map_draw_start_terminal()
         self.map_draw_obs()
-        cv.imshow(self.name4image, self.image)
-        cv.waitKey(0)
+        if show:
+            cv.imshow(self.name4image, self.image)
+            cv.waitKey(0)
 
     def path_draw(self, path, name, color):
         pt1 = path.pop()

@@ -27,7 +27,7 @@ class RRT_Connect_Smart(RRT_Connect):
 
     def rrt_connect_smart_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_connect_smart.mp4', cv.VideoWriter_fourcc(*'mp4v'), 300, (self.width, self.height))
+        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_connect_smart.mp4', cv.VideoWriter_fourcc(*'mp4v'), 120, (self.width, self.height))
         while step < 10000:
             step += 1
             dir_points = self.create_random_points_in_map(50)
@@ -53,7 +53,7 @@ class RRT_Connect_Smart(RRT_Connect):
                 self.smart_optimize()
                 self.path_find2()
                 self.path_draw(self.waypoint, 'rrt_connect_smart.png', Color().Red)
-                for _ in range(10):
+                for _ in range(120):
                     video_record.write(self.image)
                 video_record.release()
                 return True

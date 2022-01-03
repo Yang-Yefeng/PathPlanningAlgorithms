@@ -4,6 +4,7 @@ from Map import *
 def sind(theta):
     return math.sin(theta / 180.0 * math.pi)
 
+
 def cosd(theta):
     return math.cos(theta / 180.0 * math.pi)
 

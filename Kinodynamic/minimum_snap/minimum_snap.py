@@ -107,6 +107,8 @@ class minimum_snap:
         self.P = cp.matrix()
         self.A = cp.matrix()
         self.B = cp.matrix()
+        self.G = cp.matrix()
+        self.H = cp.matrix()
 
         self.coefficient = [[0.0 for _ in range(self.order + 1)] for _ in range(self.n_trajectory)]
 

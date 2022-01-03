@@ -53,7 +53,7 @@ class RRT(samplingmap):
 
     def rrt_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt.mp4', cv.VideoWriter_fourcc(*'mp4v'), 300, (self.width, self.height))
+        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt.mp4', cv.VideoWriter_fourcc(*'mp4v'), 120, (self.width, self.height))
         while step <= 10000:
             step += 1
             dir_points = self.create_random_points_in_map(50)
@@ -67,7 +67,7 @@ class RRT(samplingmap):
                     self.parent[tuple(self.terminal)] = tuple(new_node)
                     self.path_find()
                     self.path_draw(self.waypoint, 'rrt.png', Color().Orange)
-                    for _ in range(10):
+                    for _ in range(120):
                         video_record.write(self.image)
                     video_record.release()
                     return True
