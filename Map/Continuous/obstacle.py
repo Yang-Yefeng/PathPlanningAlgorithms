@@ -1,8 +1,10 @@
 import math
+import random
 
 
 def sind(theta):
     return math.sin(theta / 180.0 * math.pi)
+
 
 def cosd(theta):
     return math.cos(theta / 180.0 * math.pi)
@@ -10,15 +12,15 @@ def cosd(theta):
 
 class obstacle:
     def __init__(self, obs):
-        self.name_set = ['triangle',        # 三角形(等腰)(就是因为描述方便)(格式统一)
-                         'rectangle',       # 四边形(利用外接圆的方式去定义)
-                         'pentagon',        # 五边形(正)(利用外接圆的方式去定义)
-                         'hexagon',         # 六边形(正)(利用外接圆的方式去定义)
-                         'heptagon'         # 七边形(正)(利用外接圆的方式去定义)
-                         'octagon',         # 八边形(正)(利用外接圆的方式去定义)
-                         'circle',          # 圆形
-                         'ellipse']         # 椭圆形
-        self.obs = self.set_obs(obs)        # the formation is ['name', [r], [points]]
+        self.name_set = ['triangle',  # 三角形(等腰)(就是因为描述方便)(格式统一)
+                         'rectangle',  # 四边形(利用外接圆的方式去定义)
+                         'pentagon',  # 五边形(正)(利用外接圆的方式去定义)
+                         'hexagon',  # 六边形(正)(利用外接圆的方式去定义)
+                         'heptagon'  # 七边形(正)(利用外接圆的方式去定义)
+                         'octagon',  # 八边形(正)(利用外接圆的方式去定义)
+                         'circle',  # 圆形
+                         'ellipse']  # 椭圆形
+        self.obs = self.set_obs(obs)  # the formation is ['name', [r], [points]]
         ''' triangle        ['triangle',  [pt1, pt2], [r, theta0, theta_bias]]     pt should be clockwise or counter-clock wise 
             rectangle       ['rectangle', [pt1, pt2], [r, theta0, theta_bias]]             pt1 and pt2 are the coordinate of the center
             pentagon        ['pentagon',  [pt1, pt2], [r, theta_bias]]
@@ -31,13 +33,15 @@ class obstacle:
     @staticmethod
     def set_obs(message: list):
         obs = []
+        if message is None:
+            return obs
         if len(message) == 0:
-            pass
+            return obs
         for item in message:
             if not item:
                 continue
             [name, [x, y], constraints] = item
-            if name == 'triangle':              # ['triangle',  [pt1, pt2], [r, theta0, theta_bias]]
+            if name == 'triangle':  # ['triangle',  [pt1, pt2], [r, theta0, theta_bias]]
                 [r, theta0, theta_bias] = constraints
                 pt1 = [x + r * cosd(90 + theta_bias), y + r * sind(90 + theta_bias)]
                 pt2 = [x + r * cosd(270 - theta0 + theta_bias), y + r * sind(270 - theta0 + theta_bias)]
@@ -84,3 +88,43 @@ class obstacle:
 
     def get_obs(self):
         return self.obs
+
+    @staticmethod
+    def set_random_circle(xRange, yRange, rRange=None):
+        if rRange is None:
+            rRange = [0.7, 1.3]
+        x = random.uniform(xRange[0], xRange[1])
+        y = random.uniform(yRange[0], yRange[1])
+        r = random.uniform(rRange[0], rRange[1])
+        return ['circle', [x, y], [r]]
+
+    @staticmethod
+    def set_random_ellipse(xRange, yRange, longRange=None, shortRange=None, thetaMax=60):  # 都用的角度，这里也用角度把
+        if longRange is None:
+            longRange = [0.7, 1.3]
+        if shortRange is None:
+            shortRange = [0.7, 1.3]
+        x = random.uniform(xRange[0], xRange[1])
+        y = random.uniform(yRange[0], yRange[1])
+        long = random.uniform(longRange[0], longRange[1])
+        short = random.uniform(shortRange[0], shortRange[1])
+        theta_bias = random.uniform(-thetaMax, thetaMax)
+        return ['ellipse', [x, y], [long, short, theta_bias]]
+
+    @staticmethod
+    def set_random_poly(xRange, yRange, rRange=None, thetaMax=30, theta0Range=None):
+        if theta0Range is None:
+            theta0Range = [20, 70]
+        if rRange is None:
+            rRange = [0.7, 1.3]
+        namelist = ['triangle', 'rectangle', 'pentagon', 'hexagon', 'heptagon', 'octagon']
+        edge = random.sample([0, 1, 2, 3, 4, 5], 1)[0]
+        x = random.uniform(xRange[0], xRange[1])
+        y = random.uniform(yRange[0], yRange[1])
+        r = random.uniform(rRange[0], rRange[1])
+        theta_bias = random.uniform(-thetaMax, thetaMax)
+        theta0 = random.uniform(theta0Range[0], theta0Range[1])
+        if edge == 0 or edge == 1:
+            return [namelist[edge], [x, y], [r, theta0, theta_bias]]
+        else:
+            return [namelist[edge], [x, y], [r, theta_bias]]

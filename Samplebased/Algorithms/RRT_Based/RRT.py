@@ -133,7 +133,7 @@ if __name__ == '__main__':
         ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
     obstacles = obstacles4
-    obstacles = obstacle(obstacles).get_obs()
+    # obstacles = obstacle(obstacles).get_obs()
     rrt = RRT(width=400,
               height=400,
               x_size=10,

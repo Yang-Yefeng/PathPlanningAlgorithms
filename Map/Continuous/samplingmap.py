@@ -1,4 +1,5 @@
 import copy
+import random
 
 import numpy as np
 import cv2 as cv
@@ -10,16 +11,18 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
                 "/../../../shenlanmotionplanning/")
 
 from Map.Color.Color import Color
+from Map.Continuous.obstacle import obstacle
 
 
 def sind(theta):
     return math.sin(theta / 180.0 * math.pi)
 
+
 def cosd(theta):
     return math.cos(theta / 180.0 * math.pi)
 
 
-class samplingmap:
+class samplingmap(obstacle):
     def __init__(self,
                  width: int = 400,
                  height: int = 400,
@@ -31,6 +34,7 @@ class samplingmap:
                  obs=None,
                  map_file=None,
                  draw=True):
+        super(samplingmap, self).__init__(obs)      # 用obstacle的函数初始化sampling map
         self.width = width
         self.height = height
         if map_file is None:
@@ -41,7 +45,7 @@ class samplingmap:
             # self.terminal = [x_size - 0.5, y_size - 0.5] if terminal is None else terminal
             self.start = start
             self.terminal = terminal
-            self.obs = obs
+            self.obs = self.get_obs()
             self.obs_num = 0 if obs is None else len(obs)
         else:
             pass
@@ -57,6 +61,7 @@ class samplingmap:
         self.pixel_per_meter = min((self.width - 2 * self.x_offset) / self.x_size,
                                    (self.height - 2 * self.y_offset) / self.y_size)
 
+        self.set_random_obstacles(10)
         self.map_draw(draw)
         self.image_temp = self.image.copy()
 
@@ -326,7 +331,7 @@ class samplingmap:
         y = (self.height - self.y_offset - coord[1]) / self.pixel_per_meter
         return [x, y]
 
-    def dis2pixel(self, coord: list) -> tuple:
+    def dis2pixel(self, coord) -> tuple:
         """
         :brief:         the transformation of coordinate between physical world and image
         :param coord:   position in physical world
@@ -419,3 +424,57 @@ class samplingmap:
         cv.imwrite('../../../somefigures/figure/' + name, self.image)
         cv.waitKey(0)
         cv.destroyAllWindows()
+
+    '''random obstacles'''
+    def set_random_obs_single(self):
+        index = random.sample([0, 1, 2, 3], 1)[0]  # 0-circle, 1-ellipse, 2-poly
+        if index == 0:
+            newObs = self.set_random_circle(xRange=[1.5, self.x_size - 1.5], yRange=[1.5, self.x_size - 1.5])
+            center = newObs[1]
+            r = newObs[2][0]
+        elif index == 1:
+            newObs = self.set_random_ellipse(xRange=[1.5, self.x_size - 1.5], yRange=[1.5, self.x_size - 1.5])
+            center = newObs[1]
+            r = max(newObs[2][0], newObs[2][1])
+        else:
+            newObs = self.set_random_poly(xRange=[1.5, self.x_size - 1.5], yRange=[1.5, self.x_size - 1.5])
+            center = newObs[1]
+            r = newObs[2][0]
+        return newObs, center, r
+
+    def set_random_obstacles(self, num):
+        new_obs = []
+        safety_dis = 0.5
+        for i in range(num):
+            '''for each obstacle'''
+            counter = 0
+            while True:
+                newObs, center, r = self.set_random_obs_single()    # 0-circle, 1-ellipse, 2-poly
+                counter += 1
+                if counter > 1000:
+                    break
+                is_acceptable = True
+                '''检测newObs与起点和终点的距离'''
+                if (self.dis_two_points(self.start, center) < r + safety_dis) or (self.dis_two_points(self.terminal, center) < r + safety_dis):
+                    continue
+                '''检测newObs与起点和终点的距离'''
+
+                '''检测障碍物与其他障碍物的距离'''
+                for _obs in self.obs:
+                    if _obs[0] == 'circle':
+                        if self.dis_two_points(center, _obs[2]) < r + _obs[1][0] + safety_dis:
+                            is_acceptable = False
+                            break
+                    elif _obs[0] == 'ellipse':
+                        if self.dis_two_points(center, _obs[2]) < r + max(_obs[1][0], _obs[1][1]) + safety_dis:
+                            is_acceptable = False
+                            break
+                    else:
+                        if self.dis_two_points(center, [_obs[1][0], _obs[1][1]]) < r + _obs[1][2] + safety_dis:
+                            is_acceptable = False
+                            break
+                '''检测障碍物与其他障碍物的距离'''
+                if is_acceptable:
+                    new_obs.append(newObs.copy())
+                    break
+            self.obs = self.set_obs(new_obs)

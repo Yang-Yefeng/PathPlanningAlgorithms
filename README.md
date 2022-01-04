@@ -11,9 +11,6 @@ This file can be regarded as a draft paper. To be honest, I am not so familiar w
 ## tree_print.py 
 This is a file that can print the structure of the platform, which is recorded in tree.txt.
 
-## mp42gif.py
-This file aims to transfer '.mp4' files to '.gif' files since github can only show gif online.
-
 The rest of the platform is environment establishment and planning algorithm implementation.
 
 Currently, there are some algorithms already implemented in this platform, including:

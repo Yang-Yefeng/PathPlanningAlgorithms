@@ -158,7 +158,7 @@ if __name__ == '__main__':
         ['rectangle', [8, 8], [2.0, 5.0, 0.]],
     ]
     obstacles = obstacles5
-    obstacles = obstacle(obstacles).get_obs()
+    # obstacles = obstacle(obstacles).get_obs()
     rrt_star = RRT_Star(width=400,
                         height=400,
                         x_size=10,

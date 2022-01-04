@@ -8,6 +8,8 @@ import scipy.linalg as linalg
 from scipy import integrate
 import sympy as sp
 import cvxopt as cp
+import random
+
 
 # t = sp.symbols('t')
 # x = sp.symbols('x')
@@ -15,6 +17,9 @@ import cvxopt as cp
 #     print('sss')
 # '''贝塞尔曲线'''
 
-a = [[2.0, 3.0, 4.0], [2.0, 3.0, 4.0], [2.0, 3.0, 4.0]]
+# a = [[2.0, 3.0, 4.0], [2.0, 3.0, 4.0], [2.0, 3.0, 4.0]]
+#
+# print(a[:][0])
 
-print(a[:][0])
+# print(random.sample([3, 4, 5, 6, 7, 8], 1)[0])
+print(random.uniform(0,1))
