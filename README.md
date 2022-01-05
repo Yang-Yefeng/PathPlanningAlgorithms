@@ -24,3 +24,5 @@ RRT, RRT_Connect, RRT_Star, RRT_Smart, RRT_Connect_Smart, RRT_Star_Smart
 More algorithms will be put into it in the future(^_^), any advice and visit are welcomed~~~
 
 E-mail: 18B904013@stu.hit.eud.cn, 21037385r@connect.polyu.hk
+
+OK
