@@ -1,6 +1,5 @@
 import copy
 import random
-
 import numpy as np
 import cv2 as cv
 import os
@@ -8,7 +7,7 @@ import sys
 import math
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
-                "/../../../shenlanmotionplanning/")
+                "/../../")
 
 from Map.Color.Color import Color
 from Map.Continuous.obstacle import obstacle
@@ -34,7 +33,7 @@ class samplingmap(obstacle):
                  obs=None,
                  map_file=None,
                  draw=True):
-        super(samplingmap, self).__init__(obs)      # 用obstacle的函数初始化sampling map
+        super(samplingmap, self).__init__(obs)  # 用obstacle的函数初始化sampling map
         self.width = width
         self.height = height
         if map_file is None:
@@ -53,7 +52,7 @@ class samplingmap(obstacle):
         self.image[:, :, 0] = np.ones([self.width, self.height]) * 255
         self.image[:, :, 1] = np.ones([self.width, self.height]) * 255
         self.image[:, :, 2] = np.ones([self.width, self.height]) * 255
-        self.image_white = self.image.copy()        # 纯白图
+        self.image_white = self.image.copy()  # 纯白图
 
         self.name4image = image_name
         self.x_offset = self.width / 20  # leave blank for image
@@ -61,9 +60,15 @@ class samplingmap(obstacle):
         self.pixel_per_meter = min((self.width - 2 * self.x_offset) / self.x_size,
                                    (self.height - 2 * self.y_offset) / self.y_size)
 
+        self.image_temp = self.image.copy()
         self.set_random_obstacles(10)
         self.map_draw(draw)
-        self.image_temp = self.image.copy()
+
+    def set_start(self, start):
+        self.start = start
+
+    def set_terminal(self, terminal):
+        self.terminal = terminal
 
     def point_is_out(self, point: list) -> bool:
         """
@@ -139,7 +144,8 @@ class samplingmap(obstacle):
         j = l_pts - 1
         for i in range(l_pts):
             if ((points[i][1] > point[1]) != (points[j][1] > point[1])) and \
-                    (point[0] < (points[j][0] - points[i][0]) * (point[1] - points[i][1]) / (points[j][1] - points[i][1]) + points[i][0]):
+                    (point[0] < (points[j][0] - points[i][0]) * (point[1] - points[i][1]) / (
+                            points[j][1] - points[i][1]) + points[i][0]):
                 res = not res
             j = i
         if res is True:
@@ -156,7 +162,8 @@ class samplingmap(obstacle):
         """
         return self.line_is_in_ellipse(r, r, 0, center, point1, point2)
 
-    def line_is_in_ellipse(self, long: float, short: float, rotate_angle: float, center: list, point1: list, point2: list) -> bool:
+    def line_is_in_ellipse(self, long: float, short: float, rotate_angle: float, center: list, point1: list,
+                           point2: list) -> bool:
         """
         :brief:                     判断线段与椭圆是否有交点
         :param long:                长轴
@@ -172,10 +179,12 @@ class samplingmap(obstacle):
         if self.point_is_in_ellipse(long, short, rotate_angle, center, point2):
             return True
         pt1 = [point1[i] - center[i] for i in [0, 1]]
-        pt2 = [point2[j] - center[j] for j in [0, 1]]       # 平移至原点
+        pt2 = [point2[j] - center[j] for j in [0, 1]]  # 平移至原点
 
-        pptt1 = [pt1[0]*cosd(-rotate_angle) - pt1[1]*sind(-rotate_angle), pt1[0]*sind(-rotate_angle) + pt1[1]*cosd(-rotate_angle)]
-        pptt2 = [pt2[0]*cosd(-rotate_angle) - pt2[1]*sind(-rotate_angle), pt2[0]*sind(-rotate_angle) + pt2[1]*cosd(-rotate_angle)]
+        pptt1 = [pt1[0] * cosd(-rotate_angle) - pt1[1] * sind(-rotate_angle),
+                 pt1[0] * sind(-rotate_angle) + pt1[1] * cosd(-rotate_angle)]
+        pptt2 = [pt2[0] * cosd(-rotate_angle) - pt2[1] * sind(-rotate_angle),
+                 pt2[0] * sind(-rotate_angle) + pt2[1] * cosd(-rotate_angle)]
 
         if pptt1[0] == pptt2[0]:
             if short ** 2 * (1 - pptt1[0] ** 2 / long ** 2) < 0:
@@ -234,12 +243,12 @@ class samplingmap(obstacle):
             '''通过坐标变换将a点变到原点'''
 
             '''通过坐标旋转将b点变到与X重合'''
-            l_ab = self.dis_two_points(a, b)     # length of ab
+            l_ab = self.dis_two_points(a, b)  # length of ab
             cos = b[0] / l_ab
             sin = b[1] / l_ab
-            bb = [cos * b[0] + sin*b[1], -sin*b[0] + cos*b[1]]
-            cc = [cos * c[0] + sin*c[1], -sin*c[0] + cos*c[1]]
-            dd = [cos * d[0] + sin*d[1], -sin*d[0] + cos*d[1]]
+            bb = [cos * b[0] + sin * b[1], -sin * b[0] + cos * b[1]]
+            cc = [cos * c[0] + sin * c[1], -sin * c[0] + cos * c[1]]
+            dd = [cos * d[0] + sin * d[1], -sin * d[0] + cos * d[1]]
             '''通过坐标旋转将b点变到与X重合'''
 
             if cc[1] * dd[1] > 0:
@@ -354,17 +363,20 @@ class samplingmap(obstacle):
         :brief:         as shown in the name of the function
         :return:        None
         """
+
         def callback(event, x, y, flags, param):
             self.image_temp = self.image.copy()
-            if event == cv.EVENT_MOUSEMOVE:         # 鼠标左键抬起
+            if event == cv.EVENT_MOUSEMOVE:  # 鼠标左键抬起
                 point = self.pixel2dis((x, y))
                 cv.circle(self.image_temp, (x, y), 3, Color().DarkMagenta, -1)
                 if min(point) <= 0. or point[0] > self.x_size or point[1] > self.y_size:
                     cv.putText(self.image_temp, "OUT", (x + 5, y + 5), cv.FONT_HERSHEY_SIMPLEX,
                                0.7, Color().DarkMagenta, 1, cv.LINE_AA)
                 else:
-                    cv.putText(self.image_temp, str(self.point_is_in_obs(point)), (x + 5, y + 5), cv.FONT_HERSHEY_SIMPLEX,
+                    cv.putText(self.image_temp, str(self.point_is_in_obs(point)), (x + 5, y + 5),
+                               cv.FONT_HERSHEY_SIMPLEX,
                                0.7, Color().DarkMagenta, 1, cv.LINE_AA)
+
         cv.setMouseCallback(self.name4image, callback)
         while True:
             cv.imshow(self.name4image, self.image_temp)
@@ -386,7 +398,7 @@ class samplingmap(obstacle):
         if self.obs is None:
             print('No obstacles!!')
             return
-        for [name, constraints, pts] in self.obs:   # [name, [], [pt1, pt2, pt3]]
+        for [name, constraints, pts] in self.obs:  # [name, [], [pt1, pt2, pt3]]
             if name == 'circle':
                 cv.circle(self.image, self.dis2pixel(pts), self.length2pixel(constraints[0]), Color().DarkGray, -1)
             elif name == 'ellipse':
@@ -399,15 +411,16 @@ class samplingmap(obstacle):
                            color=Color().DarkGray,
                            thickness=-1)
             else:
-                cv.fillConvexPoly(self.image, points=np.array([list(self.dis2pixel(pt)) for pt in pts]), color=Color().DarkGray)
+                cv.fillConvexPoly(self.image, points=np.array([list(self.dis2pixel(pt)) for pt in pts]),
+                                  color=Color().DarkGray)
 
-    def map_draw(self, show=True):
+    def map_draw(self, show=True, isWait=True):
         self.map_draw_boundary()
         self.map_draw_start_terminal()
         self.map_draw_obs()
         if show:
             cv.imshow(self.name4image, self.image)
-            cv.waitKey(0)
+            cv.waitKey(0) if isWait else cv.waitKey(1)
 
     def path_draw(self, path, name, color):
         pt1 = path.pop()
@@ -426,6 +439,7 @@ class samplingmap(obstacle):
         cv.destroyAllWindows()
 
     '''random obstacles'''
+
     def set_random_obs_single(self):
         index = random.sample([0, 1, 2, 3], 1)[0]  # 0-circle, 1-ellipse, 2-poly
         if index == 0:
@@ -449,14 +463,16 @@ class samplingmap(obstacle):
             '''for each obstacle'''
             counter = 0
             while True:
-                newObs, center, r = self.set_random_obs_single()    # 0-circle, 1-ellipse, 2-poly
+                newObs, center, r = self.set_random_obs_single()  # 0-circle, 1-ellipse, 2-poly
                 counter += 1
                 if counter > 1000:
                     break
                 is_acceptable = True
                 '''检测newObs与起点和终点的距离'''
-                if (self.dis_two_points(self.start, center) < r + safety_dis) or (self.dis_two_points(self.terminal, center) < r + safety_dis):
-                    continue
+                if (self.start is not None) and (self.start != []) and (self.terminal is not None) and (self.terminal != []):
+                    if (self.dis_two_points(self.start, center) < r + safety_dis) or (
+                            self.dis_two_points(self.terminal, center) < r + safety_dis):
+                        continue
                 '''检测newObs与起点和终点的距离'''
 
                 '''检测障碍物与其他障碍物的距离'''

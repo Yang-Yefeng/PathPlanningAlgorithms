@@ -1,5 +1,6 @@
 from samplingmap import samplingmap
-from obstacle import obstacle
+import random
+# from obstacle import obstacle
 
 
 if __name__ == '__main__':
@@ -27,13 +28,24 @@ if __name__ == '__main__':
     # ]
     # obs = obstacle(obs).get_obs()
     obs = []
-    sample_map = samplingmap(width=400,
-                             height=400,
-                             x_size=10,
-                             y_size=10,
+    sample_map = samplingmap(width=500,
+                             height=500,
+                             x_size=15,
+                             y_size=15,
                              image_name='samplingmap',
-                             start=[0.5, 0.5],
-                             terminal=[9.5, 9.5],
+                             start=None,
+                             terminal=None,
                              obs=obs,
                              map_file=None)
     # sample_map.test_func_point_is_in_obs_using_opencv_callback()
+    counter = 0
+    for _ in range(10000):
+        # sample_map.set_start([sample_map.x_size / 2, sample_map.y_size / 2])
+        sample_map.set_start([random.uniform(0.5, sample_map.x_size - 0.5), random.uniform(0.5, sample_map.x_size - 0.5)])
+        sample_map.set_terminal([random.uniform(0.5, sample_map.x_size-0.5), random.uniform(0.5, sample_map.x_size-0.5)])
+        sample_map.image = sample_map.image_temp.copy()
+        sample_map.set_random_obstacles(10)
+        sample_map.map_draw(isWait=False)
+        counter += 1
+        if counter % 100 == 0:
+            print('...', counter, '...')
