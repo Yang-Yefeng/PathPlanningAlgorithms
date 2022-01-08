@@ -147,6 +147,7 @@ class rasterizedmap:
         return True if self.map_flag[grid[0]][grid[1]] == 0 else False
 
     '''save the map_cfg file'''
+
     def map_create_database(self, map_num: int, filePath: str, fileName: str):
         """
         map_num:    number of the maps
@@ -160,30 +161,110 @@ class rasterizedmap:
         f.writelines('x_grid:' + str(self.x_grid) + '\n')
         f.writelines('y_grid:' + str(self.y_grid) + '\n')
         '''First part is the basic message'''
-        f.writelines('==========BEGIN==========' + '\n')
+        f.writelines('BEGIN' + '\n')
         for i in range(map_num):
             print('num:', i)
             self.sampling_map.set_start([self.sampling_map.x_size / 2, self.sampling_map.y_size / 2])
-            self.sampling_map.set_terminal([random.uniform(0.3, self.sampling_map.x_size-0.3), random.uniform(0.3, self.sampling_map.x_size-0.3)])
-            self.sampling_map.set_random_obstacles(10)
+            self.sampling_map.set_terminal([random.uniform(0.3, self.sampling_map.x_size - 0.3), random.uniform(0.3, self.sampling_map.x_size - 0.3)])
+            self.sampling_map.set_random_obstacles(15)
             self.map_rasterization()
-            self.draw_rasterization_map(isShow=True, isWait=False)
+            # self.draw_rasterization_map(isShow=True, isWait=False)
             '''Second part is the start-terminal message'''
             f.writelines('num' + str(i) + '\n')
-            f.writelines('start:' + str(self.sampling_map.start) + '\n')
-            f.writelines('terminal:' + str(self.sampling_map.terminal) + '\n')
+            f.writelines('start:' + str(list(self.sampling_map.start)) + '\n')
+            f.writelines('terminal:' + str(list(self.sampling_map.terminal)) + '\n')
             '''Second part is the start-terminal message'''
 
             '''Third part is the continuous obstacles' message'''
+            f.writelines('obs num:' + str(len(self.sampling_map.obs)) + '\n')
             for _obs in self.sampling_map.obs:
-                f.writelines(str(_obs) + '\n')
+                f.writelines(str(_obs).replace('array', '').replace('(', '').replace(')', '') + '\n')
             '''Third part is the continuous obstacles' message'''
 
             '''Fourth part is the binary grid map'''
             f.writelines(str(self.map_flag).replace(', ', '').replace('[', '').replace(']', '') + '\n')
             '''Fourth part is the binary grid map'''
-        f.writelines('==========END==========' + '\n')
+        f.writelines('END' + '\n')
         f.close()
 
+    '''read the map_cfg file'''
+
     def map_load_database(self, databaseFile):
-        pass
+        BIG_DATA_BASE = []
+        f = open(databaseFile, mode='r')
+        ''''检测文件头'''
+        assert str(self.sampling_map.x_size) == f.readline().strip('\n')[7:]
+        assert str(self.sampling_map.y_size) == f.readline().strip('\n')[7:]
+        assert str(self.x_grid) == f.readline().strip('\n')[7:]
+        assert str(self.y_grid) == f.readline().strip('\n')[7:]
+        assert f.readline().strip('\n') == 'BEGIN'
+        ''''检测文件头'''
+
+        line = f.readline().strip('\n')
+        while line != 'END':
+            DATA = []
+
+            start = f.readline().strip('\n').replace('start:[', '').replace(']', '').replace(' ', '').split(',')
+            DATA.append([float(kk) for kk in start])
+            terminal = f.readline().strip('\n').replace('terminal:[', '').replace(']', '').replace(' ', '').split(',')
+            DATA.append([float(kk) for kk in terminal])
+
+            obsnum = int(f.readline().strip('\n').replace('obs num:', ''))  # obstacles
+            DATA.append(obsnum)
+            obs_info = []
+            while obsnum > 0:
+                obs_info.append(self.transfer_str_2_obs_info(f.readline().strip('\n')))  # each obstacle
+                obsnum -= 1
+            DATA.append(obs_info)
+            flag = [[0 for _ in range(self.x_grid)] for _ in range(self.y_grid)]
+            binary = f.readline().strip('\n')
+            for i in range(self.x_grid*self.y_grid):
+                col = i % self.y_grid       # 行数
+                row = i // self.y_grid      # 列数
+                flag[row][col] = int(binary[i])
+            DATA.append(flag)
+            BIG_DATA_BASE.append(DATA)
+            line = f.readline().strip('\n')
+        f.close()
+        return BIG_DATA_BASE
+
+    @staticmethod
+    def transfer_str_2_obs_info(string: str):
+        string = string.replace(' ', '').replace("'", '').replace('[', '').replace(']', '').split(',')
+        # obs_info = []
+        # name_dict = ['circle', 'ellipse', 'triangle', 'rectangle', 'pentagon', 'hexagon', 'heptagon', 'octagon']
+        # print(string)
+        name = string[0]
+        if name == 'circle':
+            r, x, y = float(string[1]), float(string[2]), float(string[3])
+            obs_info = [name, [r], [x, y]]
+        elif name == 'ellipse':
+            long, short, theta, x, y = float(string[1]), float(string[2]), float(string[3]), float(string[4]), float(string[5])
+            obs_info = [name, [long, short, theta], [x, y]]
+        elif name == 'triangle':
+            x, y, r = float(string[1]), float(string[2]), float(string[3])
+            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(3)]
+            obs_info = [name, [x, y, r], pts]
+        elif name == 'rectangle':
+            x, y, r = float(string[1]), float(string[2]), float(string[3])
+            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(4)]
+            obs_info = [name, [x, y, r], pts]
+        elif name == 'pentagon':
+            x, y, r = float(string[1]), float(string[2]), float(string[3])
+            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(5)]
+            obs_info = [name, [x, y, r], pts]
+        elif name == 'hexagon':
+            x, y, r = float(string[1]), float(string[2]), float(string[3])
+            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(6)]
+            obs_info = [name, [x, y, r], pts]
+        elif name == 'heptagon':
+            x, y, r = float(string[1]), float(string[2]), float(string[3])
+            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(7)]
+            obs_info = [name, [x, y, r], pts]
+        elif name == 'octagon':
+            x, y, r = float(string[1]), float(string[2]), float(string[3])
+            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(8)]
+            obs_info = [name, [x, y, r], pts]
+        else:
+            assert False
+        return obs_info

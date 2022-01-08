@@ -28,11 +28,25 @@ if __name__ == '__main__':
                              map_file=None,
                              draw=False)     # 生成连续地图
     r_map = rasterizedmap(_samplingmap=sample_map, x_grid=40, y_grid=40)  # 生成栅格化地图
-    # r_map.map_create_database(map_num=3, filePath='', fileName='DataBase01.txt')
-    for i in range(5):
-        r_map.sampling_map.set_terminal(terminal=[random.uniform(0, r_map.sampling_map.x_size), random.uniform(0, r_map.sampling_map.y_size)])
-        r_map.sampling_map.set_random_obstacles(15)
-        r_map.map_rasterization()
-        r_map.draw_rasterization_map(isShow=True, isWait=True)
+    r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase01.txt')
+    r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase02.txt')
+    r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase03.txt')
+    r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase04.txt')
+    r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase05.txt')
+    # data_base = r_map.map_load_database('DataBase01.txt')
+    # print(len(data_base))
+    # print(len(data_base[0]))
+    # for data in data_base:
+    #     r_map.sampling_map.start = data[0]
+    #     r_map.sampling_map.terminal = data[1]
+    #     r_map.sampling_map.obs = data[3]
+    #     r_map.map_flag = data[4]
+    #     r_map.draw_rasterization_map(isShow=True, isWait=True)
+
+    # for i in range(5):
+    #     r_map.sampling_map.set_terminal(terminal=[random.uniform(0, r_map.sampling_map.x_size), random.uniform(0, r_map.sampling_map.y_size)])
+    #     r_map.sampling_map.set_random_obstacles(15)
+    #     r_map.map_rasterization()
+    #     r_map.draw_rasterization_map(isShow=True, isWait=True)
 
     # print(r_map.point_in_grid([2.2, 2.2]))

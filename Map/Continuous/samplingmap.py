@@ -65,10 +65,10 @@ class samplingmap(obstacle):
         self.map_draw(draw)
 
     def set_start(self, start):
-        self.start = np.around(start, 3)
+        self.start = list(np.around(start, 3))
 
     def set_terminal(self, terminal):
-        self.terminal = np.around(terminal, 3)
+        self.terminal = list(np.around(terminal, 3))
 
     def point_is_out(self, point: list) -> bool:
         """

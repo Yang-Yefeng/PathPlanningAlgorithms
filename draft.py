@@ -21,9 +21,15 @@ import random
 #
 # print(a[:][0])
 
-# print(random.sample([3, 4, 5, 6, 7, 8], 1)[0])
-# a = [[random.choice([0, 1]) for _ in range(10)] for _ in range(5)]
-# b = str(a).replace(', ', '').replace('[', '').replace(']', '')
-# print(b)
-a = [[random.uniform(0,1) for _ in range(10)] for _ in range(10)]
-print(np.around(a,2))
+# string = "['octagon', [3.899, 9.353, 0.787], [[ 3.575, 10.071], [3.163, 9.632], [3.181, 9.03 ], [3.62 , 8.618], [4.222, 8.636], [4.634, 9.075], [4.616, 9.677], [ 4.177, 10.089]]]"
+# string = string.replace(' ', '').replace("'", '').replace('[', '').replace(']', '')
+# print(string)
+# print(string.split(','))
+# a = []
+# b =[1]
+# a.append(b)
+# print(a)
+# b = [2]
+# a.append(b)
+# print(a)
+print(10//4)

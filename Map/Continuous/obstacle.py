@@ -48,42 +48,42 @@ class obstacle:
                 pt1 = [x + r * cosd(90 + theta_bias), y + r * sind(90 + theta_bias)]
                 pt2 = [x + r * cosd(270 - theta0 + theta_bias), y + r * sind(270 - theta0 + theta_bias)]
                 pt3 = [x + r * cosd(theta0 - 90 + theta_bias), y + r * sind(theta0 - 90 + theta_bias)]
-                obs.append([name, np.around([x, y, r], 3), np.around([pt1, pt2, pt3], 3)])
+                obs.append([name, list(np.around([x, y, r], 3)), list(np.around([pt1, pt2, pt3], 3))])
             elif name == 'rectangle':
                 [r, theta0, theta_bias] = constraints
                 pt1 = [x + r * cosd(theta0 + theta_bias), y + r * sind(theta0 + theta_bias)]
                 pt2 = [x + r * cosd(180 - theta0 + theta_bias), y + r * sind(180 - theta0 + theta_bias)]
                 pt3 = [x + r * cosd(180 + theta0 + theta_bias), y + r * sind(180 + theta0 + theta_bias)]
                 pt4 = [x + r * cosd(-theta0 + theta_bias), y + r * sind(-theta0 + theta_bias)]
-                obs.append([name, np.around([x, y, r], 3), np.around([pt1, pt2, pt3, pt4], 3)])
+                obs.append([name, list(np.around([x, y, r], 3)), list(np.around([pt1, pt2, pt3, pt4], 3))])
             elif name == 'pentagon':
                 [r, theta_bias] = constraints
                 pt = []
                 for i in range(5):
                     pt.append([x + r * cosd(90 + 72 * i + theta_bias), y + r * sind(90 + 72 * i + theta_bias)])
-                obs.append([name, np.around([x, y, r], 3), np.around(pt, 3)])
+                obs.append([name, list(np.around([x, y, r], 3)), list(np.around(pt, 3))])
             elif name == 'hexagon':
                 [r, theta_bias] = constraints
                 pt = []
                 for i in range(6):
                     pt.append([x + r * cosd(90 + 60 * i + theta_bias), y + r * sind(90 + 60 * i + theta_bias)])
-                obs.append([name, np.around([x, y, r], 3), np.around(pt, 3)])
+                obs.append([name, list(np.around([x, y, r], 3)), list(np.around(pt, 3))])
             elif name == 'heptagon':
                 [r, theta_bias] = constraints
                 pt = []
                 for i in range(7):
                     pt.append([x + r * cosd(90 + 360 / 7 * i + theta_bias), y + r * sind(90 + 360 / 7 * i + theta_bias)])
-                obs.append([name, np.around([x, y, r], 3), np.around(pt, 3)])
+                obs.append([name, list(np.around([x, y, r], 3)), list(np.around(pt, 3))])
             elif name == 'octagon':
                 [r, theta_bias] = constraints
                 pt = []
                 for i in range(8):
                     pt.append([x + r * cosd(90 + 45 * i + theta_bias), y + r * sind(90 + 45 * i + theta_bias)])
-                obs.append([name, np.around([x, y, r], 3), np.around(pt, 3)])
+                obs.append([name, list(np.around([x, y, r], 3)), list(np.around(pt, 3))])
             elif name == 'circle':
-                obs.append([name, np.around(constraints, 3), np.around([x, y], 3)])
+                obs.append([name, list(np.around(constraints, 3)), list(np.around([x, y], 3))])
             elif name == 'ellipse':
-                obs.append([name, np.around(constraints, 3), np.around([x, y], 3)])
+                obs.append([name, list(np.around(constraints, 3)), list(np.around([x, y], 3))])
             else:
                 print('Unknown obstacle type')
         return obs
