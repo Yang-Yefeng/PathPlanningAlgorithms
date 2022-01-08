@@ -61,7 +61,7 @@ class samplingmap(obstacle):
                                    (self.height - 2 * self.y_offset) / self.y_size)
 
         self.image_temp = self.image.copy()
-        self.set_random_obstacles(10)
+        # self.set_random_obstacles(10)
         self.map_draw(draw)
 
     def set_start(self, start):
@@ -414,13 +414,21 @@ class samplingmap(obstacle):
                 cv.fillConvexPoly(self.image, points=np.array([list(self.dis2pixel(pt)) for pt in pts]),
                                   color=Color().DarkGray)
 
+    def map_draw_photo_frame(self):
+        cv.rectangle(self.image, (0, 0), (self.width - 1, self.dis2pixel([self.x_size, self.y_size])[1]), Color().White, -1)
+        cv.rectangle(self.image, (0, 0), (self.dis2pixel([0., 0.])[0], self.height - 1), Color().White, -1)
+        cv.rectangle(self.image, self.dis2pixel([self.x_size, self.y_size]), (self.width - 1, self.height - 1), Color().White, -1)
+        cv.rectangle(self.image, self.dis2pixel([0., 0.]), (self.width - 1, self.height - 1), Color().White, -1)
+
     def map_draw(self, show=True, isWait=True):
+        self.map_draw_obs()
+        self.map_draw_photo_frame()
         self.map_draw_boundary()
         self.map_draw_start_terminal()
-        self.map_draw_obs()
         if show:
             cv.imshow(self.name4image, self.image)
             cv.waitKey(0) if isWait else cv.waitKey(1)
+        self.image = self.image_temp.copy()
 
     def path_draw(self, path, name, color):
         pt1 = path.pop()
@@ -443,22 +451,22 @@ class samplingmap(obstacle):
     def set_random_obs_single(self):
         index = random.sample([0, 1, 2, 3], 1)[0]  # 0-circle, 1-ellipse, 2-poly
         if index == 0:
-            newObs = self.set_random_circle(xRange=[1.5, self.x_size - 1.5], yRange=[1.5, self.x_size - 1.5])
+            newObs = self.set_random_circle(xRange=[0.5, self.x_size - 0.5], yRange=[0.5, self.x_size - 0.5])
             center = newObs[1]
             r = newObs[2][0]
         elif index == 1:
-            newObs = self.set_random_ellipse(xRange=[1.5, self.x_size - 1.5], yRange=[1.5, self.x_size - 1.5])
+            newObs = self.set_random_ellipse(xRange=[0.5, self.x_size - 0.5], yRange=[0.5, self.x_size - 0.5])
             center = newObs[1]
             r = max(newObs[2][0], newObs[2][1])
         else:
-            newObs = self.set_random_poly(xRange=[1.5, self.x_size - 1.5], yRange=[1.5, self.x_size - 1.5])
+            newObs = self.set_random_poly(xRange=[0.5, self.x_size - 0.5], yRange=[0.5, self.x_size - 0.5])
             center = newObs[1]
             r = newObs[2][0]
         return newObs, center, r
 
     def set_random_obstacles(self, num):
         new_obs = []
-        safety_dis = 0.5
+        safety_dis = 0.2
         for i in range(num):
             '''for each obstacle'''
             counter = 0
