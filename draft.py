@@ -22,4 +22,8 @@ import random
 # print(a[:][0])
 
 # print(random.sample([3, 4, 5, 6, 7, 8], 1)[0])
-print(random.uniform(0,1))
+# a = [[random.choice([0, 1]) for _ in range(10)] for _ in range(5)]
+# b = str(a).replace(', ', '').replace('[', '').replace(']', '')
+# print(b)
+a = [[random.uniform(0,1) for _ in range(10)] for _ in range(10)]
+print(np.around(a,2))

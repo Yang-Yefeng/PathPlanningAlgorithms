@@ -1,0 +1,5 @@
+x_size:10
+y_size:10
+x_grid:40
+y_grid:40
+==========BEGIN==========

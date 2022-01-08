@@ -65,10 +65,10 @@ class samplingmap(obstacle):
         self.map_draw(draw)
 
     def set_start(self, start):
-        self.start = start
+        self.start = np.around(start, 3)
 
     def set_terminal(self, terminal):
-        self.terminal = terminal
+        self.terminal = np.around(terminal, 3)
 
     def point_is_out(self, point: list) -> bool:
         """
@@ -388,7 +388,7 @@ class samplingmap(obstacle):
         cv.rectangle(self.image, self.dis2pixel([0., 0.]), self.dis2pixel([self.x_size, self.y_size]), Color().Black, 2)
 
     def map_draw_start_terminal(self):
-        if self.start and self.terminal:
+        if (self.start is not None) and (self.terminal is not None):
             cv.circle(self.image, self.dis2pixel(self.start), 5, Color().Red, -1)
             cv.circle(self.image, self.dis2pixel(self.terminal), 5, Color().Blue, -1)
         else:

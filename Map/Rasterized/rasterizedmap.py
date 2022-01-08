@@ -1,3 +1,5 @@
+import random
+
 import cv2 as cv
 import os
 import sys
@@ -78,6 +80,7 @@ class rasterizedmap:
         self.map_draw_gird_rectangle()
         self.map_draw_x_grid()
         self.map_draw_y_grid()
+        self.sampling_map.map_draw_start_terminal()
         self.sampling_map.map_draw_obs()
         self.sampling_map.map_draw_photo_frame()
         self.sampling_map.map_draw_boundary()
@@ -142,3 +145,45 @@ class rasterizedmap:
 
     def is_grid_available(self, grid: list) -> bool:
         return True if self.map_flag[grid[0]][grid[1]] == 0 else False
+
+    '''save the map_cfg file'''
+    def map_create_database(self, map_num: int, filePath: str, fileName: str):
+        """
+        map_num:    number of the maps
+        filePath:
+        fileName:
+        """
+        f = open(file=filePath + fileName, mode='w')
+        '''First part is the basic message'''
+        f.writelines('x_size:' + str(self.sampling_map.x_size) + '\n')
+        f.writelines('y_size:' + str(self.sampling_map.y_size) + '\n')
+        f.writelines('x_grid:' + str(self.x_grid) + '\n')
+        f.writelines('y_grid:' + str(self.y_grid) + '\n')
+        '''First part is the basic message'''
+        f.writelines('==========BEGIN==========' + '\n')
+        for i in range(map_num):
+            print('num:', i)
+            self.sampling_map.set_start([self.sampling_map.x_size / 2, self.sampling_map.y_size / 2])
+            self.sampling_map.set_terminal([random.uniform(0.3, self.sampling_map.x_size-0.3), random.uniform(0.3, self.sampling_map.x_size-0.3)])
+            self.sampling_map.set_random_obstacles(10)
+            self.map_rasterization()
+            self.draw_rasterization_map(isShow=True, isWait=False)
+            '''Second part is the start-terminal message'''
+            f.writelines('num' + str(i) + '\n')
+            f.writelines('start:' + str(self.sampling_map.start) + '\n')
+            f.writelines('terminal:' + str(self.sampling_map.terminal) + '\n')
+            '''Second part is the start-terminal message'''
+
+            '''Third part is the continuous obstacles' message'''
+            for _obs in self.sampling_map.obs:
+                f.writelines(str(_obs) + '\n')
+            '''Third part is the continuous obstacles' message'''
+
+            '''Fourth part is the binary grid map'''
+            f.writelines(str(self.map_flag).replace(', ', '').replace('[', '').replace(']', '') + '\n')
+            '''Fourth part is the binary grid map'''
+        f.writelines('==========END==========' + '\n')
+        f.close()
+
+    def map_load_database(self, databaseFile):
+        pass

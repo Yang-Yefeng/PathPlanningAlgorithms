@@ -28,11 +28,11 @@ if __name__ == '__main__':
                              map_file=None,
                              draw=False)     # 生成连续地图
     r_map = rasterizedmap(_samplingmap=sample_map, x_grid=40, y_grid=40)  # 生成栅格化地图
-    for i in range(1000):
-        sample_map.set_terminal([random.uniform(0, sample_map.x_size), random.uniform(0, sample_map.x_size)])
-        sample_map.set_random_obstacles(10)
+    # r_map.map_create_database(map_num=3, filePath='', fileName='DataBase01.txt')
+    for i in range(5):
+        r_map.sampling_map.set_terminal(terminal=[random.uniform(0, r_map.sampling_map.x_size), random.uniform(0, r_map.sampling_map.y_size)])
+        r_map.sampling_map.set_random_obstacles(15)
         r_map.map_rasterization()
-        sample_map.map_draw(isWait=False)
-        r_map.draw_rasterization_map(isShow=True, isWait=False)
+        r_map.draw_rasterization_map(isShow=True, isWait=True)
 
     # print(r_map.point_in_grid([2.2, 2.2]))

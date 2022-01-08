@@ -1,6 +1,8 @@
 import math
 import random
 
+import numpy as np
+
 
 def sind(theta):
     return math.sin(theta / 180.0 * math.pi)
@@ -46,42 +48,42 @@ class obstacle:
                 pt1 = [x + r * cosd(90 + theta_bias), y + r * sind(90 + theta_bias)]
                 pt2 = [x + r * cosd(270 - theta0 + theta_bias), y + r * sind(270 - theta0 + theta_bias)]
                 pt3 = [x + r * cosd(theta0 - 90 + theta_bias), y + r * sind(theta0 - 90 + theta_bias)]
-                obs.append([name, [x, y, r], [pt1, pt2, pt3]])
+                obs.append([name, np.around([x, y, r], 3), np.around([pt1, pt2, pt3], 3)])
             elif name == 'rectangle':
                 [r, theta0, theta_bias] = constraints
                 pt1 = [x + r * cosd(theta0 + theta_bias), y + r * sind(theta0 + theta_bias)]
                 pt2 = [x + r * cosd(180 - theta0 + theta_bias), y + r * sind(180 - theta0 + theta_bias)]
                 pt3 = [x + r * cosd(180 + theta0 + theta_bias), y + r * sind(180 + theta0 + theta_bias)]
                 pt4 = [x + r * cosd(-theta0 + theta_bias), y + r * sind(-theta0 + theta_bias)]
-                obs.append([name, [x, y, r], [pt1, pt2, pt3, pt4]])
+                obs.append([name, np.around([x, y, r], 3), np.around([pt1, pt2, pt3, pt4], 3)])
             elif name == 'pentagon':
                 [r, theta_bias] = constraints
                 pt = []
                 for i in range(5):
                     pt.append([x + r * cosd(90 + 72 * i + theta_bias), y + r * sind(90 + 72 * i + theta_bias)])
-                obs.append([name, [x, y, r], pt])
+                obs.append([name, np.around([x, y, r], 3), np.around(pt, 3)])
             elif name == 'hexagon':
                 [r, theta_bias] = constraints
                 pt = []
                 for i in range(6):
                     pt.append([x + r * cosd(90 + 60 * i + theta_bias), y + r * sind(90 + 60 * i + theta_bias)])
-                obs.append([name, [x, y, r], pt])
+                obs.append([name, np.around([x, y, r], 3), np.around(pt, 3)])
             elif name == 'heptagon':
                 [r, theta_bias] = constraints
                 pt = []
                 for i in range(7):
                     pt.append([x + r * cosd(90 + 360 / 7 * i + theta_bias), y + r * sind(90 + 360 / 7 * i + theta_bias)])
-                obs.append([name, [x, y, r], pt])
+                obs.append([name, np.around([x, y, r], 3), np.around(pt, 3)])
             elif name == 'octagon':
                 [r, theta_bias] = constraints
                 pt = []
                 for i in range(8):
                     pt.append([x + r * cosd(90 + 45 * i + theta_bias), y + r * sind(90 + 45 * i + theta_bias)])
-                obs.append([name, [x, y, r], pt])
+                obs.append([name, np.around([x, y, r], 3), np.around(pt, 3)])
             elif name == 'circle':
-                obs.append([name, constraints, [x, y]])
+                obs.append([name, np.around(constraints, 3), np.around([x, y], 3)])
             elif name == 'ellipse':
-                obs.append([name, constraints, [x, y]])
+                obs.append([name, np.around(constraints, 3), np.around([x, y], 3)])
             else:
                 print('Unknown obstacle type')
         return obs
@@ -92,7 +94,7 @@ class obstacle:
     @staticmethod
     def set_random_circle(xRange, yRange, rRange=None):
         if rRange is None:
-            rRange = [0.7, 1.3]
+            rRange = [0.4, 1.0]
         x = random.uniform(xRange[0], xRange[1])
         y = random.uniform(yRange[0], yRange[1])
         r = random.uniform(rRange[0], rRange[1])
@@ -101,9 +103,9 @@ class obstacle:
     @staticmethod
     def set_random_ellipse(xRange, yRange, longRange=None, shortRange=None, thetaMax=60):  # 都用的角度，这里也用角度把
         if longRange is None:
-            longRange = [0.7, 1.3]
+            longRange = [0.4, 1.0]
         if shortRange is None:
-            shortRange = [0.7, 1.3]
+            shortRange = [0.4, 1.0]
         x = random.uniform(xRange[0], xRange[1])
         y = random.uniform(yRange[0], yRange[1])
         long = random.uniform(longRange[0], longRange[1])
@@ -116,7 +118,7 @@ class obstacle:
         if theta0Range is None:
             theta0Range = [20, 70]
         if rRange is None:
-            rRange = [0.7, 1.3]
+            rRange = [0.4, 1.0]
         namelist = ['triangle', 'rectangle', 'pentagon', 'hexagon', 'heptagon', 'octagon']
         edge = random.sample([0, 1, 2, 3, 4, 5], 1)[0]
         x = random.uniform(xRange[0], xRange[1])
