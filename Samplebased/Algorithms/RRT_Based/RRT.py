@@ -1,5 +1,6 @@
 import os
 import sys
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
                 "/../../../../PathPlanningAlgorithms/")
 
@@ -10,15 +11,16 @@ class RRT(samplingmap):
     def __init__(self, width, height, x_size, y_size, image_name, start, terminal, obs, map_file):
         super(RRT, self).__init__(width, height, x_size, y_size, image_name, start, terminal, obs, map_file)
 
-        self.tree = KDTree.create(dimensions=2)     # create a KDTree with dimension 2
-        self.step = 0.2                             # each step length robot moves
+        self.tree = KDTree.create(dimensions=2)  # create a KDTree with dimension 2
+        self.step = 0.2  # each step length robot moves
         self.stop_iteration = 0.2
         self.parent = dict()
         self.waypoint = []
 
         '''initialization'''
-        self.tree.add(self.start)
-        self.parent[tuple(self.start)] = tuple(self.start)
+        if (start is not None) and (start != []):
+            self.tree.add(self.start)
+            self.parent[tuple(self.start)] = tuple(self.start)
         '''initialization'''
 
     def create_random_points_in_map(self, num):
@@ -38,8 +40,8 @@ class RRT(samplingmap):
     def search_nearest_node_and_tree_generate(self, points):
         new_nodes = []
         for point in points:
-            node, _ = self.tree.search_nn(point)                                    # 开始寻找在KDTree中离point最近的节点
-            new_node = self.tree_generate_with_start_end_point(node.data, point)    # 新的节点，但是没有做障碍物检测
+            node, _ = self.tree.search_nn(point)  # 开始寻找在KDTree中离point最近的节点
+            new_node = self.tree_generate_with_start_end_point(node.data, point)  # 新的节点，但是没有做障碍物检测
             if self.point_is_in_obs(new_node):
                 continue
             if self.line_is_in_obs(new_node, node.data):
@@ -91,25 +93,35 @@ class RRT(samplingmap):
             if s == self.parent[s]:  # tuple(self.start)
                 break
 
+    def reset(self):
+        self.tree = KDTree.create(dimensions=2)  # create a KDTree with dimension 2
+        self.parent = dict()
+        self.waypoint = []
+
+        '''initialization'''
+        self.tree.add(self.start)
+        self.parent[tuple(self.start)] = tuple(self.start)
+        '''initialization'''
+
 
 if __name__ == '__main__':
     obstacles1 = [
-        ['triangle',  [1.5, 5],   [1.0, 60.0, 0.0]],
-        ['rectangle', [3, 3.5],   [2.0, 5.0, 0.]],
-        ['rectangle', [4, 1],     [1.5, 5.0, -20.]],
-        ['pentagon',  [7, 8.5],   [1.0, 180.0]],
-        ['hexagon',   [8.0, 2],   [1.0, 30.0]],
-        ['triangle',  [8.0, 5],   [1.0, 40.0, 20.0]],
-        ['hexagon',   [5.5, 2],   [0.5, 0.0]],
-        ['circle',    [6, 6],     [1.0]],
-        ['ellipse',   [3, 8],     [2.6, 0.6, -20.0]],
-        ['pentagon',  [3.4, 6.0], [0.6, 50]],
-        ['pentagon',  [8.7, 6.4], [0.8, 108]],
-        ['ellipse',   [1.0, 2.5], [0.8, 0.6, 60.0]],
-        ['pentagon',  [6.5, 4.2], [0.46, 25.0]]]
+        ['triangle', [1.5, 5], [1.0, 60.0, 0.0]],
+        ['rectangle', [3, 3.5], [2.0, 5.0, 0.]],
+        ['rectangle', [4, 1], [1.5, 5.0, -20.]],
+        ['pentagon', [7, 8.5], [1.0, 180.0]],
+        ['hexagon', [8.0, 2], [1.0, 30.0]],
+        ['triangle', [8.0, 5], [1.0, 40.0, 20.0]],
+        ['hexagon', [5.5, 2], [0.5, 0.0]],
+        ['circle', [6, 6], [1.0]],
+        ['ellipse', [3, 8], [2.6, 0.6, -20.0]],
+        ['pentagon', [3.4, 6.0], [0.6, 50]],
+        ['pentagon', [8.7, 6.4], [0.8, 108]],
+        ['ellipse', [1.0, 2.5], [0.8, 0.6, 60.0]],
+        ['pentagon', [6.5, 4.2], [0.46, 25.0]]]
     obstacles2 = [
-        ['rectangle', [7, 8],   [2.0, 85.0, 0.]],
-        ['rectangle', [4, 6],   [3.2, 5.0, 0.]],
+        ['rectangle', [7, 8], [2.0, 85.0, 0.]],
+        ['rectangle', [4, 6], [3.2, 5.0, 0.]],
         ['rectangle', [3, 3.5], [2.0, 5.0, 0.]],
         ['rectangle', [5, 2], [2.0, 85.0, 0.]]
     ]
@@ -142,7 +154,7 @@ if __name__ == '__main__':
               x_size=10,
               y_size=10,
               image_name='samplingmap',
-              start=[0.5, 0.5],     # 4.5, 8.5
+              start=[0.5, 0.5],  # 4.5, 8.5
               terminal=[9.5, 9.5],
               obs=obstacles,
               map_file=None)

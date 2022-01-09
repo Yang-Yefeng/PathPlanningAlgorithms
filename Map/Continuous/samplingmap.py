@@ -447,7 +447,8 @@ class samplingmap(obstacle):
         self.map_draw_start_terminal()
         cv.imshow(self.name4image, self.image)
         cv.imwrite('../../../somefigures/figure/' + name, self.image)
-        cv.waitKey(0)
+        self.image = self.image_temp.copy()
+        cv.waitKey(10)
         cv.destroyAllWindows()
 
     '''random obstacles'''
@@ -506,3 +507,8 @@ class samplingmap(obstacle):
                     new_obs.append(newObs.copy())
                     break
             self.obs = self.set_obs(new_obs)
+
+    def autoSetWithDataBase(self, mapData):
+        self.start = mapData[0]
+        self.terminal = mapData[1]
+        self.obs = mapData[3]
