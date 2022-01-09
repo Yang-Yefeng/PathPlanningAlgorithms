@@ -441,6 +441,10 @@ class samplingmap(obstacle):
             # cv.waitKey(0)
             pt1 = pt2
             pt1_int = self.dis2pixel(pt1)
+        self.map_draw_obs()
+        self.map_draw_photo_frame()
+        self.map_draw_boundary()
+        self.map_draw_start_terminal()
         cv.imshow(self.name4image, self.image)
         cv.imwrite('../../../somefigures/figure/' + name, self.image)
         cv.waitKey(0)
@@ -449,7 +453,7 @@ class samplingmap(obstacle):
     '''random obstacles'''
 
     def set_random_obs_single(self):
-        index = random.sample([0, 1, 2, 3], 1)[0]  # 0-circle, 1-ellipse, 2-poly
+        index = random.sample([0, 1, 2, 3, 4, 5], 1)[0]  # 0-circle, 1-ellipse, 2-poly，大于1的数字越多，多边形的概率越大
         if index == 0:
             newObs = self.set_random_circle(xRange=[0.5, self.x_size - 0.5], yRange=[0.5, self.x_size - 0.5])
             center = newObs[1]

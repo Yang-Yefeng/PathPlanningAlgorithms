@@ -32,4 +32,7 @@ import random
 # b = [2]
 # a.append(b)
 # print(a)
-print(10//4)
+a = [[[1,2,3], [45]]]
+b = [[[1,2,3], [457645634]]]
+c = []
+print(a + b + c)

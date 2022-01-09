@@ -232,6 +232,13 @@ class rasterizedmap:
         return BIG_DATA_BASE
 
     @staticmethod
+    def merge_database(databases):
+        merge = []
+        for database in databases:
+            merge += database
+        return merge
+
+    @staticmethod
     def transfer_str_2_obs_info(string: str):
         string = string.replace(' ', '').replace("'", '').replace('[', '').replace(']', '').split(',')
         # obs_info = []
@@ -271,3 +278,19 @@ class rasterizedmap:
         else:
             assert False
         return obs_info
+
+    def test4database(self):
+        DataBase = []
+        names = os.listdir('10X10-40x40-DataBase')
+        for name in names:
+            print('Start Loading' + name)
+            DataBase.append(self.map_load_database('10X10-40x40-DataBase/' + name))
+            print('Finish Loading' + name)
+        for database in DataBase:
+            # print('new')
+            for data in database:
+                self.sampling_map.start = data[0]
+                self.sampling_map.terminal = data[1]
+                self.sampling_map.obs = data[3]
+                self.map_flag = data[4]
+                self.draw_rasterization_map(isShow=True, isWait=False)
