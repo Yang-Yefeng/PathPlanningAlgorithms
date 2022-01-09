@@ -209,12 +209,12 @@ class rasterizedmap:
             terminal = f.readline().strip('\n').replace('terminal:[', '').replace(']', '').replace(' ', '').split(',')
             DATA.append([float(kk) for kk in terminal])
 
-            obsnum = int(f.readline().strip('\n').replace('obs num:', ''))  # obstacles
-            DATA.append(obsnum)
+            obsNum = int(f.readline().strip('\n').replace('obs num:', ''))  # obstacles
+            DATA.append(obsNum)
             obs_info = []
-            while obsnum > 0:
+            while obsNum > 0:
                 obs_info.append(self.transfer_str_2_obs_info(f.readline().strip('\n')))  # each obstacle
-                obsnum -= 1
+                obsNum -= 1
             DATA.append(obs_info)
             flag = [[0 for _ in range(self.x_grid)] for _ in range(self.y_grid)]
             binary = f.readline().strip('\n')
@@ -225,6 +225,9 @@ class rasterizedmap:
             DATA.append(flag)
             BIG_DATA_BASE.append(DATA)
             line = f.readline().strip('\n')
+            if line != 'END':
+                if int(line[3:]) % 100 == 0:
+                    print('...loading env ', int(line[3:]), '...')
         f.close()
         return BIG_DATA_BASE
 
