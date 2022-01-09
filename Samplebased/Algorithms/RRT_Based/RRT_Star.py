@@ -87,6 +87,10 @@ class RRT_Star(RRT):
             new_nodes = self.search_nearest_node_and_tree_generate_with_rewire(dir_points)
             for new_node in new_nodes:
                 '''draw dynamic map'''
+                self.map_draw_obs()
+                self.map_draw_photo_frame()
+                self.map_draw_boundary()
+                self.map_draw_start_terminal()
                 cv.line(self.image, self.dis2pixel(new_node), self.dis2pixel(self.parent[tuple(new_node)]), Color().Purple, 1)
                 '''draw dynamic map'''
                 if (new_node[0] - self.terminal[0]) ** 2 + (new_node[1] - self.terminal[1]) ** 2 <= self.stop_iteration ** 2:

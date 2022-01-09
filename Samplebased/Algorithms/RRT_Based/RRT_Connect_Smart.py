@@ -35,10 +35,18 @@ class RRT_Connect_Smart(RRT_Connect):
             new_node_terminals = self.search_nearest_node_and_tree_generate_from_terminal(dir_points)
             for new_node_start in new_node_starts:
                 '''draw dynamic map'''
+                self.map_draw_obs()
+                self.map_draw_photo_frame()
+                self.map_draw_boundary()
+                self.map_draw_start_terminal()
                 cv.line(self.image, self.dis2pixel(new_node_start), self.dis2pixel(self.parent_start[tuple(new_node_start)]), Color().Purple, 1)
                 '''draw dynamic map'''
             for new_node_terminal in new_node_terminals:
                 '''draw dynamic map'''
+                self.map_draw_obs()
+                self.map_draw_photo_frame()
+                self.map_draw_boundary()
+                self.map_draw_start_terminal()
                 cv.line(self.image, self.dis2pixel(new_node_terminal), self.dis2pixel(self.parent_terminal[tuple(new_node_terminal)]), Color().DarkGreen, 1)
                 '''draw dynamic map'''
             if is_dynamic_show:
