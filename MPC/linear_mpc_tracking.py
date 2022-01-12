@@ -117,7 +117,7 @@ if __name__ == '__main__':
         Qy, Py = mpc.get_Q_P_inCostFunction_with_ref(1.0, 1.0, 1.0, 1.0, _t, 1)
         Qz, Pz = mpc.get_Q_P_inCostFunction_with_ref(1.0, 1.0, 1.0, 1.0, _t, 2)
         inequality = False
-        if inequality:
+        if inequality:      # 是否考虑不等式约束
             Gx, Hx = mpc.get_G_H_inequalityConstraints(0)
             Jx = cp.solvers.qp(Qx, Px, Gx, Hx, None, None)
             jerkX = Jx['x'][0]
