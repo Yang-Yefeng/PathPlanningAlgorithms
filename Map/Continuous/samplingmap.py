@@ -53,6 +53,7 @@ class samplingmap(obstacle):
         self.image[:, :, 1] = np.ones([self.width, self.height]) * 255
         self.image[:, :, 2] = np.ones([self.width, self.height]) * 255
         self.image_white = self.image.copy()  # 纯白图
+        self.image_save = self.image.copy()
 
         self.name4image = image_name
         self.x_offset = self.width / 20  # leave blank for image

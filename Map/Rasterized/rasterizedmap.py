@@ -1,4 +1,5 @@
 import random
+import time
 
 import cv2 as cv
 import os
@@ -88,6 +89,7 @@ class rasterizedmap:
         if isShow:
             cv.imshow(self.name4image, self.sampling_map.image)
             cv.waitKey(0) if isWait else cv.waitKey(1)
+        self.sampling_map.image_save = self.sampling_map.image.copy()
         self.sampling_map.image = self.sampling_map.image_temp.copy()
 
     def map_draw_gird_rectangle(self):
@@ -164,7 +166,7 @@ class rasterizedmap:
         f.writelines('BEGIN' + '\n')
         for i in range(map_num):
             print('num:', i)
-            self.sampling_map.set_start([self.sampling_map.x_size / 2, self.sampling_map.y_size / 2])
+            self.sampling_map.set_start([random.uniform(0.3, self.sampling_map.x_size - 0.3), random.uniform(0.3, self.sampling_map.x_size - 0.3)])
             self.sampling_map.set_terminal([random.uniform(0.3, self.sampling_map.x_size - 0.3), random.uniform(0.3, self.sampling_map.x_size - 0.3)])
             self.sampling_map.set_random_obstacles(15)
             self.map_rasterization()
@@ -281,16 +283,26 @@ class rasterizedmap:
 
     def test4database(self):
         DataBase = []
-        names = os.listdir('10X10-40x40-DataBase')
+        names = os.listdir('10X10-40x40-DataBase-Start-Terminal-Random')
         for name in names:
             print('Start Loading' + name)
-            DataBase.append(self.map_load_database('10X10-40x40-DataBase/' + name))
+            DataBase.append(self.map_load_database('10X10-40x40-DataBase-Start-Terminal-Random/' + name))
             print('Finish Loading' + name)
         for database in DataBase:
             # print('new')
+            # cap = cv.VideoWriter('record.mp4',
+            #                      cv.VideoWriter_fourcc('X', 'V', 'I', 'D'),
+            #                      120.0,
+            #                      (self.sampling_map.width, self.sampling_map.height))
+            t1 = time.time()
             for data in database:
                 self.sampling_map.start = data[0]
                 self.sampling_map.terminal = data[1]
                 self.sampling_map.obs = data[3]
                 self.map_flag = data[4]
                 self.draw_rasterization_map(isShow=True, isWait=False)
+                # cap.write(self.sampling_map.image_save)
+                # if cv.waitKey(1) == 27:
+                #     return
+            t2 = time.time()
+            print(t2 - t1)

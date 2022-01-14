@@ -34,5 +34,9 @@ if __name__ == '__main__':
                              map_file=None,
                              draw=False)     # 生成连续地图
     r_map = rasterizedmap(_samplingmap=sample_map, x_grid=40, y_grid=40)  # 生成栅格化地图
-    # r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase01.txt')
-    r_map.test4database()
+    '''初始位置和终止位置都随机'''
+    for i in [12, 13, 14, 15, 16, 17, 18, 19, 20]:
+        print(i)
+        r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase' + str(i) + '.txt')
+    '''初始位置和终止位置都随机'''
+    # r_map.test4database()
