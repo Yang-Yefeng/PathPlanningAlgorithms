@@ -23,20 +23,26 @@ if __name__ == '__main__':
     # ]
     # obs = obstacle(obs).get_obs()
     obs = []
+    x_size = 5
+    y_size = 5
+    x_grid_per_meter = 10
+    y_grid_per_meter = 10
     sample_map = samplingmap(width=500,
                              height=500,
-                             x_size=10,
-                             y_size=10,
+                             x_size=x_size,
+                             y_size=y_size,
                              image_name='samplingMap',
-                             start=[5.0, 5.0],
+                             start=None,
                              terminal=None,
                              obs=obs,
                              map_file=None,
                              draw=False)     # 生成连续地图
-    r_map = rasterizedmap(_samplingmap=sample_map, x_grid=40, y_grid=40)  # 生成栅格化地图
-    '''初始位置和终止位置都随机'''
-    for i in [12, 13, 14, 15, 16, 17, 18, 19, 20]:
-        print(i)
+    r_map = rasterizedmap(_samplingmap=sample_map, x_grid=x_size*x_grid_per_meter, y_grid=y_size*y_grid_per_meter)  # 生成栅格化地图
+    # r_map.sampling_map.set_start([random.uniform(0.15, r_map.sampling_map.x_size - 0.15), random.uniform(0.15, sample_map.y_size - 0.15)])
+    # r_map.sampling_map.set_terminal([random.uniform(0.15, r_map.sampling_map.x_size - 0.15), random.uniform(0.15, sample_map.y_size - 0.15)])
+    # r_map.sampling_map.set_random_obstacles(20)
+    # r_map.map_rasterization()
+    # r_map.draw_rasterization_map(isShow=True, isWait=True)
+    for i in [21, 22, 23, 24, 25, 26, 27, 2, 29, 30]:
         r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase' + str(i) + '.txt')
-    '''初始位置和终止位置都随机'''
     # r_map.test4database()

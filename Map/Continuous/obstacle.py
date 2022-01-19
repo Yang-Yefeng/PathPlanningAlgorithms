@@ -94,7 +94,7 @@ class obstacle:
     @staticmethod
     def set_random_circle(xRange, yRange, rRange=None):
         if rRange is None:
-            rRange = [0.4, 1.0]
+            rRange = [0.2, 0.4]
         x = random.uniform(xRange[0], xRange[1])
         y = random.uniform(yRange[0], yRange[1])
         r = random.uniform(rRange[0], rRange[1])
@@ -103,9 +103,9 @@ class obstacle:
     @staticmethod
     def set_random_ellipse(xRange, yRange, longRange=None, shortRange=None, thetaMax=60):  # 都用的角度，这里也用角度把
         if longRange is None:
-            longRange = [0.4, 1.0]
+            longRange = [0.2, 0.4]
         if shortRange is None:
-            shortRange = [0.4, 1.0]
+            shortRange = [0.2, 0.4]
         x = random.uniform(xRange[0], xRange[1])
         y = random.uniform(yRange[0], yRange[1])
         long = random.uniform(longRange[0], longRange[1])
@@ -116,9 +116,9 @@ class obstacle:
     @staticmethod
     def set_random_poly(xRange, yRange, rRange=None, thetaMax=30, theta0Range=None):
         if theta0Range is None:
-            theta0Range = [20, 70]
+            theta0Range = [0, 180]
         if rRange is None:
-            rRange = [0.4, 1.0]
+            rRange = [0.2, 0.4]
         namelist = ['triangle', 'rectangle', 'pentagon', 'hexagon', 'heptagon', 'octagon']
         edge = random.sample([0, 1, 2, 3, 4, 5], 1)[0]
         x = random.uniform(xRange[0], xRange[1])

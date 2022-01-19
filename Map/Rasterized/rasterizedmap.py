@@ -1,10 +1,11 @@
 import random
-import time
 
 import cv2 as cv
 import os
 import sys
 import math
+
+import numpy as np
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
                 "/../../../PathPlanningAlgorithms/")
@@ -50,23 +51,69 @@ class rasterizedmap:
         '''四个边都不在障碍物里面'''
 
         for _obs in self.sampling_map.obs:
-            if _obs[0] == 'circle' or _obs[0] == 'ellipse':
-                if self.sampling_map.point_is_in_poly(center=None, r=None, points=points, point=_obs[2]):
-                    return 1
-            else:
-                if self.sampling_map.point_is_in_poly(center=None, r=None, points=points, point=[_obs[1][0], _obs[1][1]]):
-                    return 1
-        '''障碍物不在格子里面'''
+            c1 = [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]
+            if self.sampling_map.point_is_in_obs(c1):
+                return 1
+        '''格子不在障碍物里面'''
         return 0
 
+    def is_grid_has_single_obs(self, points, obs):
+        if obs[0] == 'circle':
+            for _point in points:
+                if self.sampling_map.point_is_in_circle(obs[2], obs[1][0], _point):
+                    return 1
+            assert len(points) == 4
+            for i in range(4):
+                if self.sampling_map.line_is_in_circle(obs[2], obs[1][0], points[i % 4], points[(i + 1) % 4]):
+                    return 1
+            c1 = [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]
+            if self.sampling_map.point_is_in_circle(obs[2], obs[1][0], c1):
+                return 1
+            return 0
+        elif obs[0] == 'ellipse':
+            for _point in points:
+                if self.sampling_map.point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], _point):
+                    return 1
+            assert len(points) == 4
+            for i in range(4):
+                if self.sampling_map.line_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
+                    return 1
+            c1 = [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]
+            if self.sampling_map.point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], c1):
+                return 1
+            return 0
+        else:
+            for _point in points:
+                if self.sampling_map.point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], _point):
+                    return 1
+            assert len(points) == 4
+            for i in range(4):
+                if self.sampling_map.line_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
+                    return 1
+            c1 = [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]
+            if self.sampling_map.point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], c1):
+                return 1
+            return 0
+
     def map_rasterization(self):
-        for i in range(self.x_grid):
-            for j in range(self.y_grid):
-                rec = [[i * self.x_meter_per_grid, j * self.y_meter_per_grid],
-                       [(i + 1) * self.x_meter_per_grid, j * self.y_meter_per_grid],
-                       [(i + 1) * self.x_meter_per_grid, (j + 1) * self.y_meter_per_grid],
-                       [i * self.x_meter_per_grid, (j + 1) * self.y_meter_per_grid]]
-                self.map_flag[i][j] = self.is_grid_has_obs(rec)
+        self.map_flag = [[0 for _ in range(self.x_grid)] for _ in range(self.y_grid)]
+        for _obs in self.sampling_map.obs:
+            obsName = _obs[0]
+            if obsName == 'circle' or obsName == 'ellipse':
+                x, y, r = _obs[2][0], _obs[2][1], _obs[1][0]
+            else:
+                x, y, r = _obs[1][0], _obs[1][1], _obs[1][2]
+            up = self.point_in_grid(self.sampling_map.point_saturation([x, y + r]))[1]  # up
+            down = self.point_in_grid(self.sampling_map.point_saturation([x, y - r]))[1]  # down
+            left = self.point_in_grid(self.sampling_map.point_saturation([x - r, y]))[0]  # left
+            right = self.point_in_grid(self.sampling_map.point_saturation([x + r, y]))[0]  # right
+            for i in np.arange(left, right + 1, 1):
+                for j in np.arange(down, up + 1, 1):
+                    rec = [[i * self.x_meter_per_grid, j * self.y_meter_per_grid],
+                           [(i + 1) * self.x_meter_per_grid, j * self.y_meter_per_grid],
+                           [(i + 1) * self.x_meter_per_grid, (j + 1) * self.y_meter_per_grid],
+                           [i * self.x_meter_per_grid, (j + 1) * self.y_meter_per_grid]]
+                    self.map_flag[i][j] = self.is_grid_has_single_obs(rec, _obs)
 
     '''drawing'''
 
@@ -78,6 +125,7 @@ class rasterizedmap:
         cv.rectangle(self.sampling_map.image, self.sampling_map.dis2pixel([0., 0.]), (self.sampling_map.width - 1, self.sampling_map.height - 1), Color().White, -1)
 
     def draw_rasterization_map(self, isShow=True, isWait=True):
+        self.sampling_map.image = self.sampling_map.image_temp.copy()
         self.map_draw_gird_rectangle()
         self.map_draw_x_grid()
         self.map_draw_y_grid()
@@ -89,8 +137,6 @@ class rasterizedmap:
         if isShow:
             cv.imshow(self.name4image, self.sampling_map.image)
             cv.waitKey(0) if isWait else cv.waitKey(1)
-        self.sampling_map.image_save = self.sampling_map.image.copy()
-        self.sampling_map.image = self.sampling_map.image_temp.copy()
 
     def map_draw_gird_rectangle(self):
         for i in range(self.x_grid):
@@ -148,8 +194,6 @@ class rasterizedmap:
     def is_grid_available(self, grid: list) -> bool:
         return True if self.map_flag[grid[0]][grid[1]] == 0 else False
 
-    '''save the map_cfg file'''
-
     def map_create_database(self, map_num: int, filePath: str, fileName: str):
         """
         map_num:    number of the maps
@@ -166,11 +210,15 @@ class rasterizedmap:
         f.writelines('BEGIN' + '\n')
         for i in range(map_num):
             print('num:', i)
-            self.sampling_map.set_start([random.uniform(0.3, self.sampling_map.x_size - 0.3), random.uniform(0.3, self.sampling_map.x_size - 0.3)])
-            self.sampling_map.set_terminal([random.uniform(0.3, self.sampling_map.x_size - 0.3), random.uniform(0.3, self.sampling_map.x_size - 0.3)])
-            self.sampling_map.set_random_obstacles(15)
+            self.sampling_map.set_start([random.uniform(0.15, self.sampling_map.x_size - 0.15), random.uniform(0.15, self.sampling_map.x_size - 0.15)])
+            self.sampling_map.set_terminal([random.uniform(0.15, self.sampling_map.x_size - 0.15), random.uniform(0.15, self.sampling_map.x_size - 0.15)])
+            # print('...start setting obstacles...')
+            self.sampling_map.set_random_obstacles(20)
+            # print('...finish setting obstacles...')
+            # print('...start map_rasterization...')
             self.map_rasterization()
-            # self.draw_rasterization_map(isShow=True, isWait=False)
+            # print('...finish map_rasterization...')
+            self.draw_rasterization_map(isShow=True, isWait=False)
             '''Second part is the start-terminal message'''
             f.writelines('num' + str(i) + '\n')
             f.writelines('start:' + str(list(self.sampling_map.start)) + '\n')
@@ -188,8 +236,6 @@ class rasterizedmap:
             '''Fourth part is the binary grid map'''
         f.writelines('END' + '\n')
         f.close()
-
-    '''read the map_cfg file'''
 
     def map_load_database(self, databaseFile):
         BIG_DATA_BASE = []
@@ -220,9 +266,9 @@ class rasterizedmap:
             DATA.append(obs_info)
             flag = [[0 for _ in range(self.x_grid)] for _ in range(self.y_grid)]
             binary = f.readline().strip('\n')
-            for i in range(self.x_grid*self.y_grid):
-                col = i % self.y_grid       # 行数
-                row = i // self.y_grid      # 列数
+            for i in range(self.x_grid * self.y_grid):
+                col = i % self.y_grid  # 行数
+                row = i // self.y_grid  # 列数
                 flag[row][col] = int(binary[i])
             DATA.append(flag)
             BIG_DATA_BASE.append(DATA)
@@ -283,26 +329,16 @@ class rasterizedmap:
 
     def test4database(self):
         DataBase = []
-        names = os.listdir('10X10-40x40-DataBase-Start-Terminal-Random')
+        names = os.listdir('10X10-40x40-DataBase')
         for name in names:
             print('Start Loading' + name)
-            DataBase.append(self.map_load_database('10X10-40x40-DataBase-Start-Terminal-Random/' + name))
+            DataBase.append(self.map_load_database('10X10-40x40-DataBase/' + name))
             print('Finish Loading' + name)
         for database in DataBase:
             # print('new')
-            # cap = cv.VideoWriter('record.mp4',
-            #                      cv.VideoWriter_fourcc('X', 'V', 'I', 'D'),
-            #                      120.0,
-            #                      (self.sampling_map.width, self.sampling_map.height))
-            t1 = time.time()
             for data in database:
                 self.sampling_map.start = data[0]
                 self.sampling_map.terminal = data[1]
                 self.sampling_map.obs = data[3]
                 self.map_flag = data[4]
                 self.draw_rasterization_map(isShow=True, isWait=False)
-                # cap.write(self.sampling_map.image_save)
-                # if cv.waitKey(1) == 27:
-                #     return
-            t2 = time.time()
-            print(t2 - t1)

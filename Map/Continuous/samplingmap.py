@@ -53,7 +53,6 @@ class samplingmap(obstacle):
         self.image[:, :, 1] = np.ones([self.width, self.height]) * 255
         self.image[:, :, 2] = np.ones([self.width, self.height]) * 255
         self.image_white = self.image.copy()  # 纯白图
-        self.image_save = self.image.copy()
 
         self.name4image = image_name
         self.x_offset = self.width / 20  # leave blank for image
@@ -78,6 +77,9 @@ class samplingmap(obstacle):
         :return:        bool
         """
         return min(point) < 0 or point[0] >= self.x_size or point[1] >= self.y_size
+
+    def point_saturation(self, point):
+        return [max(min(point[0], self.y_size - 1e-3), 1e-3), max(min(point[1], self.y_size - 1e-3), 1e-3)]
 
     @staticmethod
     def cross_product(vec1: list, vec2: list) -> float:
@@ -390,8 +392,8 @@ class samplingmap(obstacle):
 
     def map_draw_start_terminal(self):
         if (self.start is not None) and (self.terminal is not None):
-            cv.circle(self.image, self.dis2pixel(self.start), 5, Color().Red, -1)
-            cv.circle(self.image, self.dis2pixel(self.terminal), 5, Color().Blue, -1)
+            cv.circle(self.image, self.dis2pixel(self.start), self.length2pixel(0.15), Color().Red, -1)
+            cv.circle(self.image, self.dis2pixel(self.terminal), self.length2pixel(0.15), Color().Blue, -1)
         else:
             print('No start point or terminal point')
 
@@ -457,35 +459,36 @@ class samplingmap(obstacle):
     def set_random_obs_single(self):
         index = random.sample([0, 1, 2, 3, 4, 5], 1)[0]  # 0-circle, 1-ellipse, 2-poly，大于1的数字越多，多边形的概率越大
         if index == 0:
-            newObs = self.set_random_circle(xRange=[0.5, self.x_size - 0.5], yRange=[0.5, self.x_size - 0.5])
+            newObs = self.set_random_circle(xRange=[0, self.x_size], yRange=[0, self.y_size], rRange=None)
             center = newObs[1]
             r = newObs[2][0]
         elif index == 1:
-            newObs = self.set_random_ellipse(xRange=[0.5, self.x_size - 0.5], yRange=[0.5, self.x_size - 0.5])
+            newObs = self.set_random_ellipse(xRange=[0, self.x_size], yRange=[0, self.y_size], shortRange=None, longRange=None)
             center = newObs[1]
             r = max(newObs[2][0], newObs[2][1])
         else:
-            newObs = self.set_random_poly(xRange=[0.5, self.x_size - 0.5], yRange=[0.5, self.x_size - 0.5])
+            newObs = self.set_random_poly(xRange=[0, self.x_size], yRange=[0, self.y_size], rRange=None, theta0Range=None)
             center = newObs[1]
             r = newObs[2][0]
         return newObs, center, r
 
     def set_random_obstacles(self, num):
         new_obs = []
-        safety_dis = 0.2
+        safety_dis = 0.4
+        safety_dis_ST = 0.2
         for i in range(num):
             '''for each obstacle'''
             counter = 0
             while True:
                 newObs, center, r = self.set_random_obs_single()  # 0-circle, 1-ellipse, 2-poly
                 counter += 1
-                if counter > 1000:
+                if counter > 10000:
                     break
                 is_acceptable = True
                 '''检测newObs与起点和终点的距离'''
                 if (self.start is not None) and (self.start != []) and (self.terminal is not None) and (self.terminal != []):
-                    if (self.dis_two_points(self.start, center) < r + safety_dis) or (
-                            self.dis_two_points(self.terminal, center) < r + safety_dis):
+                    if (self.dis_two_points(self.start, center) < r + safety_dis_ST) or \
+                            (self.dis_two_points(self.terminal, center) < r + safety_dis_ST):
                         continue
                 '''检测newObs与起点和终点的距离'''
 

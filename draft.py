@@ -20,21 +20,6 @@ import random
 # a = [[2.0, 3.0, 4.0], [2.0, 3.0, 4.0], [2.0, 3.0, 4.0]]
 #
 # print(a[:][0])
-
-# string = "['octagon', [3.899, 9.353, 0.787], [[ 3.575, 10.071], [3.163, 9.632], [3.181, 9.03 ], [3.62 , 8.618], [4.222, 8.636], [4.634, 9.075], [4.616, 9.677], [ 4.177, 10.089]]]"
-# string = string.replace(' ', '').replace("'", '').replace('[', '').replace(']', '')
-# print(string)
-# print(string.split(','))
-# a = []
-# b =[1]
-# a.append(b)
-# print(a)
-# b = [2]
-# a.append(b)
-# print(a)
-# a = [[[1,2,3], [45]]]
-# b = [[[1,2,3], [457645634]]]
-# c = []
-# print(a + b + c)
-a = [1,2,3]
-print(type(a[0]) == list)
+a = 1
+b = 5
+print(np.arange(a,b+1,1))
