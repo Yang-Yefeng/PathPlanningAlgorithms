@@ -2,20 +2,11 @@ import random
 import cv2 as cv
 import os
 import sys
-import math
-import numpy as np
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
                 "/../../../PathPlanningAlgorithms/")
 from Map.Color.Color import Color
 from Map.Continuous.samplingmap import samplingmap
-
-
-def sind(theta):
-    return math.sin(theta / 180.0 * math.pi)
-
-
-def cosd(theta):
-    return math.cos(theta / 180.0 * math.pi)
+from Map.basic_geometry import *
 
 
 class rasterizedmap(samplingmap):
@@ -51,102 +42,105 @@ class rasterizedmap(samplingmap):
         '''格子不在障碍物里面'''
         return 0
 
-    def is_grid_has_single_obs(self, points, obs):
+    @staticmethod
+    def is_grid_has_single_obs(points, obs):
         if obs[0] == 'circle':
             for _point in points:
-                if self.point_is_in_circle(obs[2], obs[1][0], _point):
+                if point_is_in_circle(obs[2], obs[1][0], _point):
                     return 1
             assert len(points) == 4
             for i in range(4):
-                if self.line_is_in_circle(obs[2], obs[1][0], points[i % 4], points[(i + 1) % 4]):
+                if line_is_in_circle(obs[2], obs[1][0], points[i % 4], points[(i + 1) % 4]):
                     return 1
             c1 = [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]
-            if self.point_is_in_circle(obs[2], obs[1][0], c1):
+            if point_is_in_circle(obs[2], obs[1][0], c1):
                 return 1
             return 0
         elif obs[0] == 'ellipse':
             for _point in points:
-                if self.point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], _point):
+                if point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], _point):
                     return 1
             assert len(points) == 4
             for i in range(4):
-                if self.line_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
+                if line_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
                     return 1
             c1 = [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]
-            if self.point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], c1):
+            if point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], c1):
                 return 1
             return 0
         else:
             for _point in points:
-                if self.point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], _point):
+                if point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], _point):
                     return 1
             assert len(points) == 4
             for i in range(4):
-                if self.line_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
+                if line_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
                     return 1
             c1 = [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]
-            if self.point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], c1):
+            if point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], c1):
                 return 1
             return 0
 
-    def is_grid_has_single_obs2(self, points, obs):
+    @staticmethod
+    def is_grid_has_single_obs2(points, obs):
         c1 = [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]
         if obs[0] == 'circle':
-            if self.point_is_in_circle(obs[2], obs[1][0], c1):
+            if point_is_in_circle(obs[2], obs[1][0], c1):
                 return 1
             return 0
         elif obs[0] == 'ellipse':
-            if self.point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], c1):
+            if point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], c1):
                 return 1
             return 0
         else:
-            if self.point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], c1):
+            if point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], c1):
                 return 1
             return 0
 
-    def is_grid_has_single_obs3(self, points, obs):
+    @staticmethod
+    def is_grid_has_single_obs3(points, obs):
         count = 0
         if obs[0] == 'circle':
             for _point in points:
-                if self.point_is_in_circle(obs[2], obs[1][0], _point):
+                if point_is_in_circle(obs[2], obs[1][0], _point):
                     count += 1
                     # return 1
             assert len(points) == 4
             for i in range(4):
-                if self.line_is_in_circle(obs[2], obs[1][0], points[i % 4], points[(i + 1) % 4]):
+                if line_is_in_circle(obs[2], obs[1][0], points[i % 4], points[(i + 1) % 4]):
                     count += 1
                     # return 1
-            if self.point_is_in_circle(obs[2], obs[1][0], [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]):
+            if point_is_in_circle(obs[2], obs[1][0], [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]):
                 return 1
             if count >= 3:
                 return 1
             return 0
         elif obs[0] == 'ellipse':
             for _point in points:
-                if self.point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], _point):
+                if point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], _point):
                     count += 1
                     # return 1
             assert len(points) == 4
             for i in range(4):
-                if self.line_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
+                if line_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
                     count += 1
                     # return 1
-            if self.point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]):
+            if point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]):
                 return 1
             if count >= 3:
                 return 1
             return 0
         else:
             for _point in points:
-                if self.point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], _point):
+                if point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], _point):
                     count += 1
                     # return 1
             assert len(points) == 4
             for i in range(4):
-                if self.line_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
+                if line_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], points[i % 4], points[(i + 1) % 4]):
                     count += 1
                     # return 1
-            if self.point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]):
+            if point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]):
                 return 1
             if count >= 3:
                 return 1
@@ -383,10 +377,10 @@ class rasterizedmap(samplingmap):
 
     def test4database(self):
         DataBase = []
-        names = os.listdir('10X10-40x40-DataBase')
+        names = os.listdir('5X5-50X50-DataBase-Random0')
         for name in names:
             print('Start Loading' + name)
-            DataBase.append(self.map_load_database('10X10-40x40-DataBase/' + name))
+            DataBase.append(self.map_load_database('5X5-50X50-DataBase-Random0/' + name))
             print('Finish Loading' + name)
         for database in DataBase:
             # print('new')
@@ -395,4 +389,4 @@ class rasterizedmap(samplingmap):
                 self.terminal = data[1]
                 self.obs = data[3]
                 self.map_flag = data[4]
-                self.draw_rasterization_map(isShow=True, isWait=False)
+                self.draw_rasterization_map(isShow=True, isWait=True)

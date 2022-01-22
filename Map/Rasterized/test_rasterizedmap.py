@@ -38,11 +38,10 @@ if __name__ == '__main__':
                           x_grid=x_size * x_grid_per_meter,
                           y_grid=y_size * y_grid_per_meter)  # 生成栅格化地图
     # r_map.set_start([random.uniform(0.15, r_map.x_size - 0.15), random.uniform(0.15, r_map.y_size - 0.15)])
-    r_map.set_start([2.5, 2.5])
-    r_map.set_terminal([random.uniform(0.15, r_map.x_size - 0.15), random.uniform(0.15, r_map.y_size - 0.15)])
+    # r_map.set_start([2.5, 2.5])
+    # r_map.set_terminal([random.uniform(0.15, r_map.x_size - 0.15), random.uniform(0.15, r_map.y_size - 0.15)])
     # r_map.set_random_obstacles(20)
-    r_map.map_rasterization()
-    r_map.draw_rasterization_map(isShow=True, isWait=True)
-    # for i in [21, 22, 23, 24, 25, 26, 27, 2, 29, 30]:
-    #     r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase' + str(i) + '.txt')
-    r_map.test4database()
+    # r_map.map_rasterization()
+    # r_map.draw_rasterization_map(isShow=True, isWait=True)
+    r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase0.txt')
+    # r_map.test4database()
