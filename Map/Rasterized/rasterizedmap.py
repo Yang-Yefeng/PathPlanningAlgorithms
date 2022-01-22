@@ -89,6 +89,21 @@ class rasterizedmap(samplingmap):
                 return 1
             return 0
 
+    def is_grid_has_single_obs2(self, points, obs):
+        c1 = [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[3][1]) / 2]
+        if obs[0] == 'circle':
+            if self.point_is_in_circle(obs[2], obs[1][0], c1):
+                return 1
+            return 0
+        elif obs[0] == 'ellipse':
+            if self.point_is_in_ellipse(obs[1][0], obs[1][1], obs[1][2], obs[2], c1):
+                return 1
+            return 0
+        else:
+            if self.point_is_in_poly([obs[1][0], obs[1][1]], obs[1][2], obs[2], c1):
+                return 1
+            return 0
+
     def map_rasterization(self):
         self.map_flag = [[0 for _ in range(self.x_grid)] for _ in range(self.y_grid)]
         for _obs in self.obs:
@@ -107,7 +122,8 @@ class rasterizedmap(samplingmap):
                            [(i + 1) * self.x_meter_per_grid, j * self.y_meter_per_grid],
                            [(i + 1) * self.x_meter_per_grid, (j + 1) * self.y_meter_per_grid],
                            [i * self.x_meter_per_grid, (j + 1) * self.y_meter_per_grid]]
-                    self.map_flag[i][j] = self.is_grid_has_single_obs(rec, _obs)
+                    # self.map_flag[i][j] = self.is_grid_has_single_obs(rec, _obs)
+                    self.map_flag[i][j] = self.is_grid_has_single_obs2(rec, _obs)
 
     def draw_rasterization_map(self, isShow=True, isWait=True):
         self.image = self.image_temp.copy()
