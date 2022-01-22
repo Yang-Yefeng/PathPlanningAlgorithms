@@ -57,6 +57,7 @@ class samplingmap(obstacle):
                                    (self.height - 2 * self.y_offset) / self.y_size)
 
         self.image_temp = self.image.copy()
+        self.save = self.image.copy()
         # self.set_random_obstacles(10)
         self.map_draw(draw)
 

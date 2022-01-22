@@ -173,6 +173,17 @@ class rasterizedmap(samplingmap):
 
         return [int(point[0] / self.x_meter_per_grid), int(point[1] / self.y_meter_per_grid)]
 
+    def grid_2_point(self, grid):
+        x, y = grid[0], grid[1]
+        return [[x * self.x_meter_per_grid, y * self.y_meter_per_grid],                 # left-bottom
+                [(x + 1) * self.x_meter_per_grid, y * self.y_meter_per_grid],           # right-bottom
+                [(x + 1) * self.x_meter_per_grid, (y + 1) * self.y_meter_per_grid],     # right-top
+                [x * self.x_meter_per_grid, (y + 1) * self.y_meter_per_grid]            # left-top
+                ]
+
+    def grid_center_point(self, grid):
+        return [(grid[0] + 0.5) * self.x_meter_per_grid, (grid[1] + 0.5) * self.y_meter_per_grid]
+
     def is_grid_available(self, grid: list) -> bool:
         return True if self.map_flag[grid[0]][grid[1]] == 0 else False
 
