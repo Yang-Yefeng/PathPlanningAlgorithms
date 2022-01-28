@@ -210,3 +210,17 @@ def line_is_in_poly(center: list, r: float, points: list, point1: list, point2: 
                     else:
                         continue
     return False
+
+
+def cal_vector_rad(v1, v2):
+    """
+    :brief:         calculate the rad between two vectors
+    :param v1:      vector1
+    :param v2:      vector2
+    :return:        the rad
+    """
+    # print(v1, v2)
+    if np.linalg.norm(v2) < 1e-4 or np.linalg.norm(v1) < 1e-4:
+        return 0
+    cosTheta = min(max(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)), -1), 1)
+    return math.acos(cosTheta)

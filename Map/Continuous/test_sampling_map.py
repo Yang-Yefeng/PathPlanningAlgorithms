@@ -35,17 +35,17 @@ if __name__ == '__main__':
                              image_name='samplingmap',
                              start=[5, 5],
                              terminal=None,
-                             obs=obs,
-                             map_file=None)
-    # sample_map.test_func_point_is_in_obs_using_opencv_callback()
-    counter = 0
-    for _ in range(1000):
-        # sample_map.set_start([sample_map.x_size / 2, sample_map.y_size / 2])
-        # sample_map.set_start([random.uniform(0.5, sample_map.x_size - 0.5), random.uniform(0.5, sample_map.x_size - 0.5)])
-        sample_map.set_terminal([random.uniform(0, sample_map.x_size), random.uniform(0, sample_map.x_size)])
-        sample_map.image = sample_map.image_temp.copy()
-        sample_map.set_random_obstacles(10)
-        sample_map.map_draw(isWait=False)
-        counter += 1
-        if counter % 100 == 0:
-            print('...', counter, '...')
+                             obs=[])
+    for i in range(10):
+        sample_map.map_create_continuous_database(map_num=1000, filePath='./DataBase-AllCircle/', fileName='database' + str(i) + '.txt')
+    # counter = 0
+    # for _ in range(1000):
+    #     # sample_map.set_start([sample_map.x_size / 2, sample_map.y_size / 2])
+    #     # sample_map.set_start([random.uniform(0.5, sample_map.x_size - 0.5), random.uniform(0.5, sample_map.x_size - 0.5)])
+    #     sample_map.set_terminal([random.uniform(0, sample_map.x_size), random.uniform(0, sample_map.x_size)])
+    #     sample_map.image = sample_map.image_temp.copy()
+    #     sample_map.set_random_obstacles(10)
+    #     sample_map.map_draw(isWait=False)
+    #     counter += 1
+    #     if counter % 100 == 0:
+    #         print('...', counter, '...')

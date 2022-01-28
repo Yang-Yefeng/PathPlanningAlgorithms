@@ -327,54 +327,6 @@ class rasterizedmap(samplingmap):
         f.close()
         return BIG_DATA_BASE
 
-    @staticmethod
-    def merge_database(databases):
-        merge = []
-        for database in databases:
-            merge += database
-        return merge
-
-    @staticmethod
-    def transfer_str_2_obs_info(string: str):
-        string = string.replace(' ', '').replace("'", '').replace('[', '').replace(']', '').split(',')
-        # obs_info = []
-        # name_dict = ['circle', 'ellipse', 'triangle', 'rectangle', 'pentagon', 'hexagon', 'heptagon', 'octagon']
-        # print(string)
-        name = string[0]
-        if name == 'circle':
-            r, x, y = float(string[1]), float(string[2]), float(string[3])
-            obs_info = [name, [r], [x, y]]
-        elif name == 'ellipse':
-            long, short, theta, x, y = float(string[1]), float(string[2]), float(string[3]), float(string[4]), float(string[5])
-            obs_info = [name, [long, short, theta], [x, y]]
-        elif name == 'triangle':
-            x, y, r = float(string[1]), float(string[2]), float(string[3])
-            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(3)]
-            obs_info = [name, [x, y, r], pts]
-        elif name == 'rectangle':
-            x, y, r = float(string[1]), float(string[2]), float(string[3])
-            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(4)]
-            obs_info = [name, [x, y, r], pts]
-        elif name == 'pentagon':
-            x, y, r = float(string[1]), float(string[2]), float(string[3])
-            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(5)]
-            obs_info = [name, [x, y, r], pts]
-        elif name == 'hexagon':
-            x, y, r = float(string[1]), float(string[2]), float(string[3])
-            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(6)]
-            obs_info = [name, [x, y, r], pts]
-        elif name == 'heptagon':
-            x, y, r = float(string[1]), float(string[2]), float(string[3])
-            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(7)]
-            obs_info = [name, [x, y, r], pts]
-        elif name == 'octagon':
-            x, y, r = float(string[1]), float(string[2]), float(string[3])
-            pts = [[float(string[4 + i * 2]), float(string[5 + i * 2])] for i in range(8)]
-            obs_info = [name, [x, y, r], pts]
-        else:
-            assert False
-        return obs_info
-
     def test4database(self):
         DataBase = []
         names = os.listdir('5X5-50X50-DataBase-Random0')

@@ -94,7 +94,7 @@ class obstacle:
     @staticmethod
     def set_random_circle(xRange, yRange, rRange=None):
         if rRange is None:
-            rRange = [0.2, 0.4]
+            rRange = [0.3, 0.5]
         x = random.uniform(xRange[0], xRange[1])
         y = random.uniform(yRange[0], yRange[1])
         r = random.uniform(rRange[0], rRange[1])
