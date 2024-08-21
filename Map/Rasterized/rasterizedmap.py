@@ -177,6 +177,7 @@ class rasterizedmap(samplingmap):
         self.map_draw_obs()
         self.map_draw_photo_frame()
         self.map_draw_boundary()
+        cv.imwrite('rasterized_map.png', self.image)
         if isShow:
             cv.imshow(self.name4image, self.image)
             cv.waitKey(0) if isWait else cv.waitKey(1)

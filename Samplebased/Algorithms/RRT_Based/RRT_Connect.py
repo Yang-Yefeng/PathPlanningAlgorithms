@@ -184,7 +184,7 @@ if __name__ == '__main__':
         ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
         ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
-    obstacles = obstacles4
+    obstacles = obstacles3
     # obstacles = obstacle(obstacles).get_obs()
     rrt_connect = RRT_Connect(width=400,
                               height=400,

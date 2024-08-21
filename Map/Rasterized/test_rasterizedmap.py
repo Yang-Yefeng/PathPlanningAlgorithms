@@ -21,11 +21,25 @@ if __name__ == '__main__':
     #     ['octagon',   [6, 4],     [1.0, 0.]],
     # ]
     # obs = obstacle(obs).get_obs()
-    obs = []
-    x_size = 5
-    y_size = 5
-    x_grid_per_meter = 10
-    y_grid_per_meter = 10
+    # obs = []
+    obs = [
+        ['triangle', [1.5, 5], [1.0, 60.0, 0.0]],
+        ['rectangle', [3, 3.5], [2.0, 5.0, 0.]],
+        ['rectangle', [4, 1], [1.5, 5.0, -20.]],
+        ['pentagon', [7, 8.5], [1.0, 180.0]],
+        ['hexagon', [8.0, 2], [1.0, 30.0]],
+        ['triangle', [8.0, 5], [1.0, 40.0, 20.0]],
+        ['hexagon', [5.5, 2], [0.5, 0.0]],
+        ['circle', [6, 6], [1.0]],
+        ['ellipse', [3, 8], [2.6, 0.6, -20.0]],
+        ['pentagon', [3.4, 6.0], [0.6, 50]],
+        ['pentagon', [8.7, 6.4], [0.8, 108]],
+        ['ellipse', [1.0, 2.5], [0.8, 0.6, 60.0]],
+        ['pentagon', [6.5, 4.2], [0.46, 25.0]]]
+    x_size = 10
+    y_size = 10
+    x_grid_per_meter = 4
+    y_grid_per_meter = 4
     r_map = rasterizedmap(width=500,
                           height=500,
                           x_size=x_size,
@@ -37,11 +51,11 @@ if __name__ == '__main__':
                           draw=False,
                           x_grid=x_size * x_grid_per_meter,
                           y_grid=y_size * y_grid_per_meter)  # 生成栅格化地图
-    # r_map.set_start([random.uniform(0.15, r_map.x_size - 0.15), random.uniform(0.15, r_map.y_size - 0.15)])
+    r_map.set_start([random.uniform(0.15, r_map.x_size - 0.15), random.uniform(0.15, r_map.y_size - 0.15)])
     # r_map.set_start([2.5, 2.5])
-    # r_map.set_terminal([random.uniform(0.15, r_map.x_size - 0.15), random.uniform(0.15, r_map.y_size - 0.15)])
+    r_map.set_terminal([random.uniform(0.15, r_map.x_size - 0.15), random.uniform(0.15, r_map.y_size - 0.15)])
     # r_map.set_random_obstacles(20)
-    # r_map.map_rasterization()
-    # r_map.draw_rasterization_map(isShow=True, isWait=True)
-    r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase0.txt')
+    r_map.map_rasterization()
+    r_map.draw_rasterization_map(isShow=True, isWait=True)
+    # r_map.map_create_database(map_num=1000, filePath='', fileName='DataBase0.txt')
     # r_map.test4database()

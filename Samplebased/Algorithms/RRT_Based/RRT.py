@@ -1,6 +1,8 @@
 import os
 import sys
 
+import cv2
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
                 "/../../../../PathPlanningAlgorithms/")
 
@@ -55,7 +57,7 @@ class RRT(samplingmap):
 
     def rrt_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt.mp4', cv.VideoWriter_fourcc(*'mp4v'), 120, (self.width, self.height))
+        # video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt.mp4', cv.VideoWriter_fourcc(*'mp4v'), 120, (self.width, self.height))
         while step <= 10000:
             step += 1
             dir_points = self.create_random_points_in_map(50)
@@ -66,6 +68,8 @@ class RRT(samplingmap):
                 self.map_draw_photo_frame()
                 self.map_draw_boundary()
                 self.map_draw_start_terminal()
+                # cv2.imshow('yyf', self.image)
+                # cv.waitKey(0)
                 cv.line(self.image, self.dis2pixel(new_node), self.dis2pixel(self.parent[tuple(new_node)]), Color().Purple, 1)
                 '''draw dynamic map'''
                 if (new_node[0] - self.terminal[0]) ** 2 + (new_node[1] - self.terminal[1]) ** 2 <= self.stop_iteration ** 2:
@@ -73,15 +77,17 @@ class RRT(samplingmap):
                     self.parent[tuple(self.terminal)] = tuple(new_node)
                     self.path_find()
                     self.path_draw(self.waypoint, 'rrt.png', Color().Orange)
-                    for _ in range(120):
-                        video_record.write(self.image)
-                    video_record.release()
+                    # for _ in range(120):
+                    #     video_record.write(self.image)
+                    # video_record.release()
                     return True
             if is_dynamic_show:
                 cv.imshow(self.name4image, self.image)
                 cv.waitKey(1)
-            video_record.write(self.image)
-        video_record.release()
+            # video_record.write(self.image)
+
+        # video_record.release()
+        # cv.waitKey(0)
         return False
 
     def path_find(self):
@@ -148,7 +154,7 @@ if __name__ == '__main__':
         ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
         ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
-    obstacles = obstacles4
+    obstacles = obstacles3
     rrt = RRT(width=400,
               height=400,
               x_size=10,
@@ -158,7 +164,15 @@ if __name__ == '__main__':
               terminal=[9.5, 9.5],
               obs=obstacles,
               map_file=None)
+    # rrt.map_draw_obs()
+    # rrt.map_draw_photo_frame()
+    # rrt.map_draw_boundary()
+    # cv.imshow(rrt.name4image, rrt.image)
+    # cv.waitKey()
+    # cv.imwrite('map3.png', rrt.image)
     if rrt.rrt_main(is_dynamic_show=True):
         print('Successful')
     else:
         print('Failed')
+
+    cv.imwrite('map3.png', rrt.image)

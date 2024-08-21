@@ -161,7 +161,7 @@ if __name__ == '__main__':
         ['rectangle', [4, 6.5], [2.5, 3.0, 0.]],
         ['rectangle', [8, 8], [2.0, 5.0, 0.]],
     ]
-    obstacles = obstacles5
+    obstacles = obstacles3
     # obstacles = obstacle(obstacles).get_obs()
     rrt_star = RRT_Star(width=400,
                         height=400,

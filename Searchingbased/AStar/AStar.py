@@ -31,7 +31,8 @@ class AStar(grid_map):
 
         '''initialization'''
         g_start = 0.
-        h_start = self.heuristic(self.start, heu_type='Dijkstra', tie_breaker=False)
+        h_start = self.heuristic(self.start, heu_type='Euclidean', tie_breaker=False)
+        ''' Euclidean Manhattan H-Infinite Diagonal Dijkstra'''
         f_start = g_start + h_start
         self.open_list.append([list(self.start), g_start, h_start, f_start])
         self.open_list.sort(key=get_f_from_open_list)
@@ -95,7 +96,7 @@ class AStar(grid_map):
                     continue
                 if self.is_occupied(list(temp)):
                     continue
-                self.update_cost(hyper_node1=node, node2=temp, heuristic_type='Euclidean')
+                self.update_cost(hyper_node1=node, node2=temp, heuristic_type='Manhattan')   # Euclidean, Dijkstra
                 '''Dijkstra Euclidean Manhattan H-Infinite Diagonal'''
 
     def astar_main(self) -> bool:
@@ -158,8 +159,8 @@ if __name__ == '__main__':
                   x_grid=20,
                   y_grid=20,
                   image_name='A-Star',
-                  start=[0, 0],
-                  terminal=[19, 19],
+                  start=[0, 9],
+                  terminal=[19, 9],
                   obs_number=150,
                   map_file=None)
     if astar.astar_main():

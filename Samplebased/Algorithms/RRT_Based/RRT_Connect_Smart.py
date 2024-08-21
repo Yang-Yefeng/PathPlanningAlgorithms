@@ -27,7 +27,7 @@ class RRT_Connect_Smart(RRT_Connect):
 
     def rrt_connect_smart_main(self, is_dynamic_show=False):
         step = 0
-        video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_connect_smart.mp4', cv.VideoWriter_fourcc(*'mp4v'), 120, (self.width, self.height))
+        # video_record = cv.VideoWriter('../../../somefigures/video/mp4/rrt_connect_smart.mp4', cv.VideoWriter_fourcc(*'mp4v'), 120, (self.width, self.height))
         while step < 10000:
             step += 1
             dir_points = self.create_random_points_in_map(50)
@@ -52,20 +52,20 @@ class RRT_Connect_Smart(RRT_Connect):
             if is_dynamic_show:
                 cv.imshow(self.name4image, self.image)
                 cv.waitKey(1)
-            video_record.write(self.image)
+            # video_record.write(self.image)
             if self.two_tree_connect():
                 self.path_find()
                 print('Successful, start to optimize...')
-                print('Press any key to continue...')
+                # print('Press any key to continue...')
                 self.path_draw(self.waypoint, 'rrt_connect_smart.png', Color().Orange)
                 self.smart_optimize()
                 self.path_find2()
                 self.path_draw(self.waypoint, 'rrt_connect_smart.png', Color().Red)
-                for _ in range(120):
-                    video_record.write(self.image)
-                video_record.release()
+                # for _ in range(120):
+                #     video_record.write(self.image)
+                # video_record.release()
                 return True
-        video_record.release()
+        # video_record.release()
         return False
 
     def path_find2(self):
@@ -122,7 +122,7 @@ if __name__ == '__main__':
         ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
         ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
-    obstacles = obstacles4
+    obstacles = obstacles3
     # obstacles = obstacle(obstacles).get_obs()
     rrt_connect = RRT_Connect_Smart(width=400,
                                     height=400,

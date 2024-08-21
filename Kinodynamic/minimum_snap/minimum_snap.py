@@ -6,13 +6,12 @@ import cvxopt as cp
 from Map import *
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import cv2 as cv
 
 def get_nodes_4_mini_jerk_using_opencv_callback(_map: samplingmap) -> list:
     nodes = []
     node_max = 10
     enough = False
-
     def callback(event, x, y, flags, param):
         if len(nodes) >= node_max:
             print('Enough...')
@@ -290,7 +289,7 @@ class minimum_snap:
 
 
 if __name__ == '__main__':
-    snap_map = samplingmap(width=400, height=400, x_size=10, y_size=10, image_name='minimum_snap', start=None, terminal=None, obs=None, map_file=None)
+    snap_map = samplingmap(width=400, height=400, x_size=10, y_size=10, image_name='minimum_snap', start=None, terminal=None, obs=None)
     pts = get_nodes_4_mini_jerk_using_opencv_callback(snap_map)     # get nodes
     # pts = [[3, 3], [3, 5], [5, 5], [5, 3]]
     v0, a0, vf, af = [0, 0], [0, 0], [0, 0], [0, 0]                 # initial velocity and acceleration

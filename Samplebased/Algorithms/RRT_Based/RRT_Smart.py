@@ -110,14 +110,14 @@ if __name__ == '__main__':
         ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
         ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
-    obstacles = obstacles2
+    obstacles = obstacles3
     # obstacles = obstacle(obstacles).get_obs()
     rrt_smart = RRT_Smart(width=400,
                           height=400,
                           x_size=10,
                           y_size=10,
                           image_name='samplingmap',
-                          start=[4.5, 8.5],         # 0.5, 0.5
+                          start=[0.5, 0.5],         # 0.5, 0.5
                           terminal=[9.5, 9.5],
                           obstacles=obstacles,
                           map_file=None)

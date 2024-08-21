@@ -4,8 +4,7 @@ import cv2 as cv
 import os
 import sys
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
-                "/../../")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../")
 
 from Map.Color.Color import Color
 from Map.Continuous.obstacle import obstacle
@@ -57,7 +56,7 @@ class samplingmap(obstacle):
 
         self.image_temp = self.image.copy()
         self.save = self.image.copy()
-        # self.set_random_obstacles(10)
+        # self.set_random_obstacles(20)
         self.map_draw(draw)
 
     def set_start(self, start):
@@ -223,6 +222,7 @@ class samplingmap(obstacle):
         self.map_draw_start_terminal()
         if show:
             cv.imshow(self.name4image, self.image)
+            cv.imwrite('map.png', self.image)
             cv.waitKey(0) if isWait else cv.waitKey(1)
         self.image = self.image_temp.copy()
 
@@ -242,26 +242,30 @@ class samplingmap(obstacle):
         self.map_draw_boundary()
         self.map_draw_start_terminal()
         cv.imshow(self.name4image, self.image)
-        cv.imwrite('../../../somefigures/figure/' + name, self.image)
-        self.image = self.image_temp.copy()
-        cv.waitKey(10)
-        cv.destroyAllWindows()
+        # cv.imwrite('./somefigures/figure/' + name, self.image)
+        cv.imwrite(name, self.image)
+        # self.image = self.image_temp.copy()
+        cv.waitKey(0)
+        # cv.destroyAllWindows()
 
     '''random obstacles'''
 
     def set_random_obs_single(self):
         index = random.sample([0, 1, 2, 3, 4, 5], 1)[0]  # 0-circle, 1-ellipse, 2-poly，大于1的数字越多，多边形的概率越大
-        index = 0
+        # index = 0
         if index == 0:
-            newObs = self.set_random_circle(xRange=[0, self.x_size], yRange=[0, self.y_size], rRange=None)
+            # newObs = self.set_random_circle(xRange=[0, self.x_size], yRange=[0, self.y_size], rRange=None)
+            newObs = self.set_random_circle(xRange=[0, self.x_size], yRange=[0, self.y_size], rRange=[0.2, min(self.x_size, self.y_size) / 3])
             center = newObs[1]
             r = newObs[2][0]
         elif index == 1:
-            newObs = self.set_random_ellipse(xRange=[0, self.x_size], yRange=[0, self.y_size], shortRange=None, longRange=None)
+            newObs = self.set_random_ellipse(xRange=[0, self.x_size], yRange=[0, self.y_size],
+                                             shortRange=[0.2, min(self.x_size, self.y_size) / 3], longRange=[0.2, min(self.x_size, self.y_size) / 3])
             center = newObs[1]
             r = max(newObs[2][0], newObs[2][1])
         else:
-            newObs = self.set_random_poly(xRange=[0, self.x_size], yRange=[0, self.y_size], rRange=None, theta0Range=None)
+            newObs = self.set_random_poly(xRange=[0, self.x_size], yRange=[0, self.y_size],
+                                          rRange=[0.2, min(self.x_size, self.y_size) / 3], theta0Range=None)
             center = newObs[1]
             r = newObs[2][0]
         return newObs, center, r
@@ -364,7 +368,7 @@ class samplingmap(obstacle):
                 print('num:', i)
             self.set_start([random.uniform(0.15, self.x_size - 0.15), random.uniform(0.15, self.x_size - 0.15)])
             self.set_terminal([random.uniform(0.15, self.x_size - 0.15), random.uniform(0.15, self.x_size - 0.15)])
-            self.set_random_obstacles(20)
+            self.set_random_obstacles(15)
             self.map_draw(show=True, isWait=False)
             '''Second part is the start-terminal message'''
             f.writelines('num' + str(i) + '\n')

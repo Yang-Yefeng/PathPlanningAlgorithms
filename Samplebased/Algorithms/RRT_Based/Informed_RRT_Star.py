@@ -5,6 +5,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) +
 
 from Samplebased.Algorithms.RRT_Based import *
 from Samplebased.Algorithms.RRT_Based.RRT_Star import RRT_Star
+from Map.basic_geometry import *
 
 
 class RRT_Informed_Star(RRT_Star):
@@ -50,7 +51,7 @@ class RRT_Informed_Star(RRT_Star):
         s = copy.deepcopy(way.pop())
         while way:
             ss = copy.deepcopy(way.pop())
-            self.path_length += self.dis_two_points(s, ss)
+            self.path_length += dis_two_points(s, ss)
             s = copy.deepcopy(ss)
 
     def search_nearest_node_and_tree_generate_with_rewire_in_ellipse(self, points):
@@ -62,7 +63,7 @@ class RRT_Informed_Star(RRT_Star):
                 continue
             if self.line_is_in_obs(new_node, node.data):
                 continue
-            heiehi = self.point_is_in_ellipse(self.a, self.b, self.rotate_angle, self.center, new_node)
+            heiehi = point_is_in_ellipse(self.a, self.b, self.rotate_angle, self.center, new_node)
             if not heiehi:    # 所有点都必须在椭圆中
                 continue
             new_nodes.append(new_node)
@@ -226,7 +227,7 @@ if __name__ == '__main__':
         ['ellipse', [3.5, 5], [3.6, 0.4, -20.0]],
         # ['ellipse', [8, 4.6], [3.6, 0.4, 90.0]],
     ]
-    obstacles = obstacles4
+    obstacles = obstacles1
     # obstacles = obstacle(obstacles).get_obs()
     informed_rrt_star = RRT_Informed_Star(width=400,
                                           height=400,

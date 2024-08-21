@@ -210,13 +210,13 @@ class JPS(AStar):
 if __name__ == '__main__':
     jps = JPS(width=500,
               height=500,
-              x_grid=30,
-              y_grid=30,
+              x_grid=20,
+              y_grid=20,
               image_name='JPS',
-              start=[0, 0],
-              terminal=[29, 26],
+              start=[0, 9],
+              terminal=[19, 9],
               obs_number=30,
-              map_file='map.map')   # ‘../../Map/Discrete/JPS_Map.map'
+              map_file=None)   # ‘../../Map/Discrete/JPS_Map.map'
     # jps = JPS(width=300,
     #               height=300,
     #               x_grid=3,
